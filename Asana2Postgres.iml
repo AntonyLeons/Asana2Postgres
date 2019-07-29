@@ -6,8 +6,8 @@
       <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
     </content>
     <orderEntry type="jdk" jdkName="12" jdkType="JavaSDK" />
-    <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" exported="" name="postgresql-42.2.6" level="project" />
+    <orderEntry type="library" exported="" name="org.postgresql:postgresql:42.2.5" level="project" />
     <orderEntry type="library" exported="" name="com.asana:asana:0.8.1" level="project" />
+    <orderEntry type="sourceFolder" forTests="false" />
   </component>
 </module>
