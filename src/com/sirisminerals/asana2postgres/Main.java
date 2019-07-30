@@ -14,7 +14,7 @@ import com.asana.*;
 import com.asana.models.*;
 import com.asana.requests.CollectionRequest;
 import com.google.api.client.util.DateTime;
-import com.google.api.client.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public class Main {
 
@@ -38,19 +38,20 @@ public class Main {
         final Client client = Client.accessToken(Auth_key);
             File file = new File("C:\\Users\\aleons\\OneDrive - Sirius Minerals PLC\\Documents\\GitHub\\Asana2Postgres\\data.csv");
             FileWriter writer = new FileWriter(file, true);
-            List<String> fields =new ArrayList<String>(Arrays.asList("id","created_at","due_on","completed","modified_at","name","notes","assignee","tags","custom_fields"));
-
+            List<String> fields =new ArrayList<String>(Arrays.asList("id","created_at","due_on","completed","modified_at","name","notes","assignee","assignee.name","assignee.email","tags","custom_fields"));
+            List<String> expand = new ArrayList<String>(Arrays.asList("id","created_at","due_on","completed","modified_at","name","notes","assignee","assignee.name","assignee.email","tags","custom_fields"));
             while(true) {
-                CollectionRequest tasks =client.tasks.findByProject(project_id).option("limit", 100).option("page_size", 100).option("offset", offset).option("fields",fields);
+                CollectionRequest tasks =client.tasks.findByProject(project_id).option("limit", 100).option("page_size", 100).option("offset", offset).option("fields",fields).option("expand",expand);
                 ResultBodyCollection<Task> result= tasks.executeRaw();
             for (Task i:result.data) {
+               i= Cleaninputs(i);
 //                Statement stmt= conn.createStatement();
 //                Optional<DateTime> createdAt = Optional.ofNullable(i.createdAt);
 //                Optional<DateTime> ModifiedaAt=Optional.ofNullable(i.modifiedAt);
 //                        createdAt.isPresent();
                 Iterator<CustomField> listIterator = i.customFields.iterator();
 //                writer.write(i.id+','+i.createdAt+','+i.completed+','+i.modifiedAt+','+i.name+','+i.assignee.name+','+i.assignee.email+','+i.startOn+','+i.completedAt+','+i.tags+','+i.notes+','+i.projects+','+i.parent+','+i.customFields+"\n");
-                writer.write(i.id+','+i.createdAt+','+i.dueOn+','+i.completed+','+i.modifiedAt+','+i.name+','+i.notes+','+i.assignee.+','+i.tags+','+listIterator.next().textValue+','+listIterator.next().textValue+','+listIterator.next().textValue+','+listIterator.next().textValue+"\n");
+                writer.write(i.id+','+i.createdAt+','+i.dueOn+','+i.completed+','+i.modifiedAt+','+i.name+','+','+i.assignee+','+i.tags+','+listIterator.next().enumValue.enabled+','+listIterator.next().enumValue.name+','+listIterator.next().description+','+listIterator.next().name+"\n");
 //                String sql = "INSERT INTO public.tickets(\"ID\", \"Created\", \"Completed\", \"Modified\", \"Name\", \"Assignee\", \"Assignee_Email\", \"Start_Date\", \"End_Date\", \"Tags\", \"Notes\", \"Projects\", \"Parent_Task\", \"Site\", \"Ticket_Time\", \"Topic\", \"Ticket_Input\", \"Start_DateTime\", \"End_DateTime\") " +
 //                        "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
 //                PreparedStatement ps =conn.prepareStatement(sql);
@@ -66,6 +67,7 @@ public class Main {
             } else {
                 break;
             }
+
         }
 
 
@@ -75,5 +77,23 @@ public class Main {
             e.printStackTrace();
         }
 
+    }
+    public static Task Cleaninputs(Task l)
+    {
+        if(l.name==null)
+        {
+            l.name="";
+        }
+        if(l.createdAt==null)
+        {
+            l.createdAt=DateTime.parseRfc3339("1999-01-01T12:00:00-00:00");
+        }
+        if(l.assignee.name==null)
+        {
+            l.assignee.name="";
+        }
+        
+
+        return l;
     }
 }
