@@ -36,32 +36,12 @@ public class Main {
             ResultBodyCollection<Task> result=client.tasks.findByProject(project_id).option("limit", 100).option("page_size", 100).option("offset", offset).executeRaw();
             for (Task i:result.data) {
                 Statement stmt= conn.createStatement();
-try {
-    String id=  check(i.id);
-    String createdAt=check(String.valueOf(i.createdAt));
-    String completed=check(String.valueOf(i.completed));
-    String modifiedAt=  check(String.valueOf(i.modifiedAt));
-    String name =check(i.name);
-    String assignee_name=check(i.assignee.name);
-    String assignee_Email=check(i.assignee.email);
-        String Start_Date=check(String.valueOf(i.startOn));
-        String End_Date=check(String.valueOf(i.completedAt));
-        String tags =check(String.valueOf(i.tags));
-        String notes=check(i.notes);
-        String projects=check(String.valueOf(i.projects));
-        String parent_name=check(i.parent.name);
-        String custom_field=check(String.valueOf(i.customFields));
-        String sql = "INSERT INTO public.tickets(\"ID\", \"Created\", \"Completed\", \"Modified\", \"Name\", \"Assignee\", \"Assignee_Email\", \"Start_Date\", \"End_Date\", \"Tags\", \"Notes\", \"Projects\", \"Parent_Task\", \"Site\", \"Ticket_Time\", \"Topic\", \"Ticket_Input\", \"Start_DateTime\", \"End_DateTime\") " +
-            "VALUES (\'" + check(i.id) + "\', \'" + check(String.valueOf(i.createdAt)) + "\', \'" + check(String.valueOf(i.completed)) + "\',\'" + check(String.valueOf(i.modifiedAt)) + "\',\'" + check(i.name) + "\',\'" + check(i.assignee.name) + "\',\'" + check(i.assignee.email) + "\',\'" + check(String.valueOf(i.startOn)) + "\',\'" + check(String.valueOf(i.completedAt)) + "\',\'" + check(String.valueOf(i.tags)) + "\',\'" + check(i.notes) + "\',\'" + check(String.valueOf(i.projects)) + "\',\'" + check(i.parent.name) + "\',\'" + check(String.valueOf(i.customFields)) + "\',\'" + check(String.valueOf(i.customFields)) + "\',\'" + check(String.valueOf(i.customFields)) + "\',\'" + check(String.valueOf(i.customFields)) + "\',\'" + check(String.valueOf(i.customFields)) + "\',\'" + check(String.valueOf(i.customFields)) + "\');";
-    stmt.executeUpdate(sql);
-}
-catch(Exception E)
-                {
 
-                }
+                String sql = "INSERT INTO public.tickets(\"ID\", \"Created\", \"Completed\", \"Modified\", \"Name\", \"Assignee\", \"Assignee_Email\", \"Start_Date\", \"End_Date\", \"Tags\", \"Notes\", \"Projects\", \"Parent_Task\", \"Site\", \"Ticket_Time\", \"Topic\", \"Ticket_Input\", \"Start_DateTime\", \"End_DateTime\") " +
+                        "VALUES (\'"+i.id+"\', \'"+i.createdAt+"\', \'"+i.completed+"\',\'"+i.modifiedAt+"\',\'"+i.name+"\',\'"+i.assignee+"\',\'"+i.assigneeStatus+"\',\'"+i.startOn+"\',\'"+i.completedAt+"\',\'"+i.tags+"\',\'"+i.notes+"\',\'"+i.projects+"\',\'"+i.parent+"\',\'"+i.customFields+"\',\'"+i.customFields+"\',\'"+i.customFields+"\',\'"+i.customFields+"\',\'"+i.customFields+"\',\'"+i.customFields+"\');";
+                stmt.executeUpdate(sql);
             }
             if (result.nextPage != null) {
-                logger.log(Level.INFO, "Next Page" + logger.getName());
                 offset = result.nextPage.offset;
             } else {
                 break;
@@ -74,15 +54,5 @@ catch(Exception E)
             logger.log(Level.SEVERE, "Failed " + logger.getName());
             e.printStackTrace();
         }
-    }
-    public static String check(String str)
-    {
-        if(str != null && !str.isEmpty())
-        {
-            return str;
-        }
-        else
-            return "null";
-
     }
 }
