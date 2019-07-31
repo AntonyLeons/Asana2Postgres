@@ -40,26 +40,66 @@ public class Main {
             FileWriter writer = new FileWriter(file, true);
             List<String> fields =new ArrayList<String>(Arrays.asList("id","created_at","due_on","completed","modified_at","name","notes","assignee","assignee.name","assignee.email","tags","custom_fields"));
             List<String> expand = new ArrayList<String>(Arrays.asList("id","created_at","due_on","completed","modified_at","name","notes","assignee","assignee.name","assignee.email","tags","custom_fields"));
-            while(true) {
+
+//            while(true) {
+//                CollectionRequest assignee=client.users.findAll();
+//                ResultBodyCollection<User> userResult=assignee.executeRaw();
+//               for(User i :userResult.data)
+//               {
+//                   i.name,i.email,i.id,i.photo
+//               }
+//                if (userResult.nextPage != null) {
+//                    logger.log(Level.INFO, "Next Page " + logger.getName());
+//                    offset = userResult.nextPage.offset;
+//                } else {
+//                    break;
+//                }
+
+           // }
+            while(true){
                 CollectionRequest tasks =client.tasks.findByProject(project_id).option("limit", 100).option("page_size", 100).option("offset", offset).option("fields",fields).option("expand",expand);
+                CollectionRequest assignee=client.users.findAll();
+                ResultBodyCollection<User> userResult=assignee.executeRaw();
                 ResultBodyCollection<Task> result= tasks.executeRaw();
             for (Task i:result.data) {
-               i= Cleaninputs(i);
-//                Statement stmt= conn.createStatement();
-//                Optional<DateTime> createdAt = Optional.ofNullable(i.createdAt);
-//                Optional<DateTime> ModifiedaAt=Optional.ofNullable(i.modifiedAt);
-//                        createdAt.isPresent();
+                String assignee_id="";
+                String assignee_name="";
+                String assignee_email="";
+                String site="";
+                String ticket_time="";
+                String Topic="";
+                String input="";
+
+                if(i.assignee!=null) {
+                    assignee_id = i.assignee.id;
+                    assignee_name = i.assignee.name;
+                    assignee_email = i.assignee.email;
+                }
                 Iterator<CustomField> listIterator = i.customFields.iterator();
-//                writer.write(i.id+','+i.createdAt+','+i.completed+','+i.modifiedAt+','+i.name+','+i.assignee.name+','+i.assignee.email+','+i.startOn+','+i.completedAt+','+i.tags+','+i.notes+','+i.projects+','+i.parent+','+i.customFields+"\n");
-                writer.write(i.id+','+i.createdAt+','+i.dueOn+','+i.completed+','+i.modifiedAt+','+i.name+','+','+i.assignee+','+i.tags+','+listIterator.next().enumValue.enabled+','+listIterator.next().enumValue.name+','+listIterator.next().description+','+listIterator.next().name+"\n");
+                CustomField a =listIterator.next();
+
+if(a!=null)
+{
+    site=a.enumValue.name;
+    
+}
+//                writer.write(i.id+"~;"+i.createdAt+"~;"+i.completed+"~;"+i.modifiedAt+"~;"+i.name+"~;"+i.assignee.name+"~;"+i.assignee.email+"~;"+i.startOn+"~;"+i.completedAt+"~;"+i.tags+"~;"+i.notes+"~;"+i.projects+"~;"+i.parent+"~;"+i.customFields+"\n");
+                writer.write(i.id+"~;"+i.createdAt+"~;"+i.completedAt+"~;"+i.completed+"~;"+i.modifiedAt+"~;"+"i.name"+"~;"+assignee_name+"~;"+assignee_email+"~;"+i.dueOn+"~;"+"i.notes"+"~;"+listIterator.next().+"~;"+listIterator.next().enumValue.name+"~;"+listIterator.next()+"~;"+listIterator.next().enumValue.name+"\n");
 //                String sql = "INSERT INTO public.tickets(\"ID\", \"Created\", \"Completed\", \"Modified\", \"Name\", \"Assignee\", \"Assignee_Email\", \"Start_Date\", \"End_Date\", \"Tags\", \"Notes\", \"Projects\", \"Parent_Task\", \"Site\", \"Ticket_Time\", \"Topic\", \"Ticket_Input\", \"Start_DateTime\", \"End_DateTime\") " +
+//                        "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
+//                String sql = "INSERT INTO public.tickets(\"ID\", \"Created\", \"Completed\", \"Modified\", \"Name\",\"Notes\",\"Start_Date\", \"End_Date\", \"Tags\")"+
 //                        "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
 //                PreparedStatement ps =conn.prepareStatement(sql);
 //                ps.setString(1,i.id);
-//                ps.setString(2,i.createdAt.toString());
-//                ps.setString(3,String.valueOf(i.completed));
-//
-//                ps.executeUpdate(sql);
+//                ps.setObject(2,i.createdAt);
+//              ps.setBoolean(3,i.completed);
+//                ps.setObject(4,i.modifiedAt);
+//                ps.setString(5,i.name);
+               // ps.setString(6,i.assignee.email);
+
+
+
+               // System.out.println(ps.execute(sql));
             }
             if (result.nextPage != null) {
                 logger.log(Level.INFO, "Next Page " + logger.getName());
@@ -78,22 +118,23 @@ public class Main {
         }
 
     }
-    public static Task Cleaninputs(Task l)
-    {
-        if(l.name==null)
-        {
-            l.name="";
-        }
-        if(l.createdAt==null)
-        {
-            l.createdAt=DateTime.parseRfc3339("1999-01-01T12:00:00-00:00");
-        }
-        if(l.assignee.name==null)
-        {
-            l.assignee.name="";
-        }
-        
-
-        return l;
-    }
+//    public static Task Cleaninputs(Task l)
+//    {
+//        if(l.name==null)
+//            l.name = "";
+//        if(l.createdAt==null)
+//            l.createdAt = DateTime.parseRfc3339("1999-01-01T12:00:00-00:00");
+//
+//        if(l.modifiedAt==null)
+//            l.modifiedAt = DateTime.parseRfc3339("1999-01-01T12:00:00-00:00");
+//        if(l.dueOn==null)
+//            l.dueOn = DateTime.parseRfc3339("1999-01-01T12:00:00-00:00");
+//        if(l.name==null)
+//            l.name="";
+//        if(l.tags==null)
+//        {
+//            l.tags=Collections.EMPTY_LIST;
+//        }
+//        return l;
+//    }
 }
