@@ -10,6 +10,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.logging.*;
 import java.time.*;
+
 import com.asana.*;
 import com.asana.models.*;
 import com.asana.requests.CollectionRequest;
@@ -21,25 +22,25 @@ public class Main {
     public static void main(String[] args) throws ClassNotFoundException, SQLException, IOException {
         final Logger logger = Logger.getLogger(Main.class.getName());
         //config
-        String project_id="2760706195514";
-        String db_user="postgres";
-        String db_pass="BodyRail%8";
-        String Auth_key="0/1fe378c15de839054e06c60f8e78563f";
+        String project_id = "2760706195514";
+        String db_user = "postgres";
+        String db_pass = "BodyRail%8";
+        String Auth_key = "0/1fe378c15de839054e06c60f8e78563f";
 
         // Database connection
         String db_url = "jdbc:postgresql://172.16.138.39:5432/support";
         Properties props = new Properties();
-        props.setProperty("user",db_user);
-        props.setProperty("password",db_pass);
-        props.setProperty("ssl","false");
+        props.setProperty("user", db_user);
+        props.setProperty("password", db_pass);
+        props.setProperty("ssl", "false");
         try (Connection conn = DriverManager.getConnection(db_url, props)) {
             logger.log(Level.INFO, "Connected " + logger.getName());
-        String offset =null;
-        final Client client = Client.accessToken(Auth_key);
+            String offset = null;
+            final Client client = Client.accessToken(Auth_key);
             File file = new File("C:\\Users\\aleons\\OneDrive - Sirius Minerals PLC\\Documents\\GitHub\\Asana2Postgres\\data.csv");
-            FileWriter writer = new FileWriter(file, true);
-            List<String> fields =new ArrayList<String>(Arrays.asList("id","created_at","due_on","completed","modified_at","name","notes","assignee","assignee.name","assignee.email","tags","custom_fields"));
-            List<String> expand = new ArrayList<String>(Arrays.asList("id","created_at","due_on","completed","modified_at","name","notes","assignee","assignee.name","assignee.email","tags","custom_fields"));
+            FileWriter writer = new FileWriter(file, false);
+            List<String> fields = new ArrayList<String>(Arrays.asList("id", "created_at", "due_on", "completed", "modified_at", "name", "notes", "assignee", "assignee.name", "assignee.email", "tags", "custom_fields","custom_fields.enum_value"));
+            List<String> expand = new ArrayList<String>(Arrays.asList("id", "created_at", "due_on", "completed", "modified_at", "name", "notes", "assignee", "assignee.name", "assignee.email", "tags", "custom_fields","custom_fields.enum_value"));
 
 //            while(true) {
 //                CollectionRequest assignee=client.users.findAll();
@@ -55,36 +56,47 @@ public class Main {
 //                    break;
 //                }
 
-           // }
-            while(true){
-                CollectionRequest tasks =client.tasks.findByProject(project_id).option("limit", 100).option("page_size", 100).option("offset", offset).option("fields",fields).option("expand",expand);
-                CollectionRequest assignee=client.users.findAll();
-                ResultBodyCollection<User> userResult=assignee.executeRaw();
-                ResultBodyCollection<Task> result= tasks.executeRaw();
-            for (Task i:result.data) {
-                String assignee_id="";
-                String assignee_name="";
-                String assignee_email="";
-                String site="";
-                String ticket_time="";
-                String Topic="";
-                String input="";
+            // }
+            while (true) {
+                CollectionRequest tasks = client.tasks.findByProject(project_id).option("limit", 100).option("page_size", 100).option("offset", offset).option("fields", fields).option("expand", expand);
+                CollectionRequest assignee = client.users.findAll();
+                ResultBodyCollection<User> userResult = assignee.executeRaw();
+                ResultBodyCollection<Task> result = tasks.executeRaw();
+                for (Task i : result.data) {
+                    String assignee_id = "";
+                    String assignee_name = "";
+                    String assignee_email = "";
+                    String site = "";
+                    String ticket_time = "";
+                    String topic = "";
+                    String input = "";
 
-                if(i.assignee!=null) {
-                    assignee_id = i.assignee.id;
-                    assignee_name = i.assignee.name;
-                    assignee_email = i.assignee.email;
-                }
-                Iterator<CustomField> listIterator = i.customFields.iterator();
-                CustomField a =listIterator.next();
+                    if (i.assignee != null) {
+                        assignee_id = i.assignee.id;
+                        assignee_name = i.assignee.name;
+                        assignee_email = i.assignee.email;
+                    }
+                    Iterator<CustomField> listIterator = i.customFields.iterator();
+                    CustomField a = listIterator.next();
 
-if(a!=null)
-{
-    site=a.enumValue.name;
-    
-}
-//                writer.write(i.id+"~;"+i.createdAt+"~;"+i.completed+"~;"+i.modifiedAt+"~;"+i.name+"~;"+i.assignee.name+"~;"+i.assignee.email+"~;"+i.startOn+"~;"+i.completedAt+"~;"+i.tags+"~;"+i.notes+"~;"+i.projects+"~;"+i.parent+"~;"+i.customFields+"\n");
-                writer.write(i.id+"~;"+i.createdAt+"~;"+i.completedAt+"~;"+i.completed+"~;"+i.modifiedAt+"~;"+"i.name"+"~;"+assignee_name+"~;"+assignee_email+"~;"+i.dueOn+"~;"+"i.notes"+"~;"+listIterator.next().+"~;"+listIterator.next().enumValue.name+"~;"+listIterator.next()+"~;"+listIterator.next().enumValue.name+"\n");
+                    if (a != null&&a.enumValue!=null) {
+                        site = a.enumValue.name;
+                    }
+                    a = listIterator.next();
+                    if (a != null&&a.enumValue!=null) {
+                        ticket_time = a.enumValue.name;
+                    }
+                    a = listIterator.next();
+                    if (a != null&&a.enumValue!=null) {
+                        topic = a.enumValue.name;
+                    }
+                    a = listIterator.next();
+                    if (a != null&&a.enumValue!=null) {
+                        input = a.enumValue.name;
+                    }
+                    
+                    //                writer.write(i.id+'~'+i.createdAt+'~'+i.completed+'~'+i.modifiedAt+'~'+i.name+'~'+i.assignee.name+'~'+i.assignee.email+'~'+i.startOn+'~'+i.completedAt+'~'+i.tags+'~'+i.notes+'~'+i.projects+'~'+i.parent+'~'+i.customFields+"\n");
+                    writer.write(i.id + '~' + i.createdAt + '~' + i.completedAt + '~' + i.completed + '~' + i.modifiedAt + '~' + "i.name" + '~' + assignee_name + '~' + assignee_email + '~' + i.dueOn + '~' + "i.notes" + '~' + site + '~' + ticket_time + '~' + topic + '~' + input + "\n");
 //                String sql = "INSERT INTO public.tickets(\"ID\", \"Created\", \"Completed\", \"Modified\", \"Name\", \"Assignee\", \"Assignee_Email\", \"Start_Date\", \"End_Date\", \"Tags\", \"Notes\", \"Projects\", \"Parent_Task\", \"Site\", \"Ticket_Time\", \"Topic\", \"Ticket_Input\", \"Start_DateTime\", \"End_DateTime\") " +
 //                        "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
 //                String sql = "INSERT INTO public.tickets(\"ID\", \"Created\", \"Completed\", \"Modified\", \"Name\",\"Notes\",\"Start_Date\", \"End_Date\", \"Tags\")"+
@@ -95,22 +107,20 @@ if(a!=null)
 //              ps.setBoolean(3,i.completed);
 //                ps.setObject(4,i.modifiedAt);
 //                ps.setString(5,i.name);
-               // ps.setString(6,i.assignee.email);
+                    // ps.setString(6,i.assignee.email);
 
 
+                    // System.out.println(ps.execute(sql));
+                }
+                if (result.nextPage != null) {
+                    logger.log(Level.INFO, "Next Page " + logger.getName());
+                    offset = result.nextPage.offset;
+                } else {
+                    break;
+                }
 
-               // System.out.println(ps.execute(sql));
             }
-            if (result.nextPage != null) {
-                logger.log(Level.INFO, "Next Page " + logger.getName());
-                offset = result.nextPage.offset;
-            } else {
-                break;
-            }
-
-        }
-
-
+writer.close();
 
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Failed to connect to db" + logger.getName());
