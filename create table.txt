@@ -1,0 +1,17 @@
+    Create table Support(
+	"ID" bigint NOT NULL PRIMARY KEY,
+    "Created_Date" date,
+    "Completed_At" date,
+    "Completed" boolean,
+    "Modified" date,
+    "Name" text,
+    "Assignee" character varying(70),
+    "Assignee_Email" character varying(100),
+    "Due_On" date,
+    "Notes" text,
+    "Site" character varying(50),
+    "Ticket_Time" character varying(50),
+    "Topic" character varying(100),
+    "Ticket_Input" character varying(100)
+
+);
