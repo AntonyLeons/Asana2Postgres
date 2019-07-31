@@ -20,14 +20,15 @@ import java.util.logging.Logger;
 
 public class Main {
 
-    public static void main(String[] args) throws ClassNotFoundException, SQLException, IOException {
+    public static void main(String[] args) throws IOException {
         final Logger logger = Logger.getLogger(Main.class.getName());
         //config
         String project_id = "2760706195514";
         String db_user = "postgres";
         String db_pass = "BodyRail%8";
         String Auth_key = "0/1fe378c15de839054e06c60f8e78563f";
-        File file = new File("C:\\Users\\aleons\\OneDrive - Sirius Minerals PLC\\Documents\\GitHub\\Asana2Postgres\\data.csv");
+        String CSV_Filepath="C:\\Users\\aleons\\OneDrive - Sirius Minerals PLC\\Documents\\GitHub\\Asana2Postgres\\data.csv";
+        String Database_path="/media/sf_Asana2Postgres/data.csv";
 
 
         // Database connection
@@ -37,10 +38,11 @@ public class Main {
         props.setProperty("password", db_pass);
         props.setProperty("ssl", "false");
 
-        try (Connection conn = DriverManager.getConnection(db_url, props)) {
+
             logger.log(Level.INFO, "Connected " + logger.getName());
             String offset = null;
             final Client client = Client.accessToken(Auth_key);
+            File file = new File(CSV_Filepath);
             FileWriter writer = new FileWriter(file, false);
             List<String> fields = new ArrayList<String>(Arrays.asList("id", "created_at", "due_on", "completed", "modified_at", "name", "notes", "assignee", "assignee.name", "assignee.email", "tags", "custom_fields", "custom_fields.enum_value"));
             List<String> expand = new ArrayList<String>(Arrays.asList("id", "created_at", "due_on", "completed", "modified_at", "name", "notes", "assignee", "assignee.name", "assignee.email", "tags", "custom_fields", "custom_fields.enum_value"));
@@ -55,13 +57,14 @@ public class Main {
                     String created_at = "";
                     String completed_at = "";
                     String modified_at = "";
+                    String due_on = "";
                     String assignee_name = "";
                     String assignee_email = "";
                     String site = "";
                     String ticket_time = "";
                     String topic = "";
                     String input = "";
-                    String due_on = "";
+
                     if (i.assignee != null) {
                         assignee_id = i.assignee.id;
                         assignee_name = i.assignee.name;
@@ -97,7 +100,7 @@ public class Main {
                     if (i.modifiedAt != null) {
                         due_on = i.modifiedAt.toString();
                     }
-                    writer.write(i.id + '~' + created_at + '~' + completed_at + '~' + i.completed + '~' + modified_at + '~' + i.name + '~' + assignee_name + '~' + assignee_email + '~' + due_on + '~' + i.notes + '~' + site + '~' + ticket_time + '~' + topic + '~' + input + "\n");
+                    writer.write(i.id + '~' + created_at + '~' + completed_at + '~' + i.completed + '~' + modified_at + '~'  + i.name.strip()+ '~' + assignee_name + '~' + assignee_email + '~' + due_on + '~' +i.notes.strip()+ '~' + site + '~' + ticket_time + '~' + topic + '~' + input + "\n");
 
                 }
                 if (result.nextPage != null) {
@@ -109,8 +112,9 @@ public class Main {
 
             }
             writer.close();
+        try (Connection conn = DriverManager.getConnection(db_url, props)) {
             Statement statement = conn.createStatement();
-            String sql = "COPY tickets FROM \'/media/sf_Asana2Postgres/data.csv\' DELIMITERS \'~\' CSV";
+            String sql = "COPY tickets FROM \'"+Database_path+"\' DELIMITERS \'~\' CSV encoding 'UTF-8'";
 
             System.out.println(statement.executeUpdate(sql));
         } catch (SQLException e) {
