@@ -85,13 +85,13 @@ public class Main {
                     input = a.enumValue.name;
                 }
                 if (i.createdAt != null) {
-                    created_at = i.createdAt.toString();
+                    created_at = String.valueOf(i.createdAt);
                 }
                 if (i.completedAt != null) {
-                    completed_at = i.createdAt.toString();
+                    completed_at = String.valueOf(i.createdAt);
                 }
                 if (i.modifiedAt != null) {
-                    modified_at = i.createdAt.toString();
+                    modified_at = String.valueOf(i.createdAt);
                 }
                 if (i.dueOn != null) {
                     due_on = i.dueOn.toString();
