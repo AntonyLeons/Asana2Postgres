@@ -1,10 +1,14 @@
 <component name="libraryTable">
   <library name="org.postgresql:postgresql:42.2.5" type="repository">
-    <properties maven-id="org.postgresql:postgresql:42.2.5" />
+    <properties maven-id="org.postgresql:postgresql:LATEST" />
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/lib/postgresql-42.2.5.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/postgresql-42.2.6.jre7.jar!/" />
     </CLASSES>
-    <JAVADOC />
-    <SOURCES />
+    <JAVADOC>
+      <root url="jar://$PROJECT_DIR$/lib/postgresql-42.2.6.jre7-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/lib/postgresql-42.2.6.jre7-sources.jar!/" />
+    </SOURCES>
   </library>
 </component>
