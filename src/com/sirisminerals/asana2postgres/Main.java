@@ -49,8 +49,6 @@ public class Main {
 
             while (true) {
                 CollectionRequest tasks = client.tasks.findByProject(project_id).option("limit", 100).option("page_size", 100).option("offset", offset).option("fields", fields).option("expand", expand);
-                CollectionRequest assignee = client.users.findAll();
-                ResultBodyCollection<User> userResult = assignee.executeRaw();
                 ResultBodyCollection<Task> result = tasks.executeRaw();
                 for (Task i : result.data) {
                     String assignee_id = "";
