@@ -4,7 +4,7 @@ language: java
 
 jdk: openjdk12
 
-script: mvn clean verify
+script: javac Asana2Postgres.java
 
 cache:
   directories:
