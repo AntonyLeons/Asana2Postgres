@@ -4,7 +4,7 @@ language: java
 
 jdk: openjdk12
 
-script: javac Asana2Postgres.java
+script: javac Main.java
 
 cache:
   directories:
