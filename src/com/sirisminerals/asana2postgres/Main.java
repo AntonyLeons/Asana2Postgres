@@ -40,10 +40,10 @@ public class Main {
         final Client client = Client.accessToken(Auth_key);
         File file = new File(CSV_Filepath);
         FileWriter writer = new FileWriter(file, false);
-        List<String> fields = new ArrayList<String>(Arrays.asList("id", "created_at", "due_on", "completed_at", "completed", "modified_at", "assignee", "assignee.name", "assignee.email", "tags", "custom_fields", "custom_fields.enum_value"));
-        List<String> expand = new ArrayList<String>(Arrays.asList("id", "created_at", "due_on", "completed_at", "completed", "modified_at", "assignee", "assignee.name", "assignee.email", "tags", "custom_fields", "custom_fields.enum_value"));
-        List<String> fields2 = new ArrayList<String>(Arrays.asList("id", "name", "notes"));
-        List<String> expand2 = new ArrayList<String>(Arrays.asList("id", "name", "notes"));
+        List<String> fields = new ArrayList<>(Arrays.asList("id", "created_at", "due_on", "completed_at", "completed", "modified_at", "assignee", "assignee.name", "assignee.email", "tags", "custom_fields", "custom_fields.enum_value"));
+        List<String> expand = new ArrayList<>(Arrays.asList("id", "created_at", "due_on", "completed_at", "completed", "modified_at", "assignee", "assignee.name", "assignee.email", "tags", "custom_fields", "custom_fields.enum_value"));
+        List<String> fields2 = new ArrayList<>(Arrays.asList("id", "name", "notes"));
+        List<String> expand2 = new ArrayList<>(Arrays.asList("id", "name", "notes"));
 
         while (true) {
             CollectionRequest tasks = client.tasks.findByProject(project_id).option("limit", 100).option("page_size", 100).option("offset", offset).option("fields", fields).option("expand", expand);
