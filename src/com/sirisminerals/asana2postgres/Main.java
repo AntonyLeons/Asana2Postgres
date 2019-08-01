@@ -38,12 +38,14 @@ public class Main {
         logger.log(Level.INFO, "Connected " + logger.getName());
         String offset = null;
         final Client client = Client.accessToken(Auth_key);
-        File file = new File(CSV_Filepath);
-        FileWriter writer = new FileWriter(file, false);
+
         List<String> fields = new ArrayList<>(Arrays.asList("id", "created_at", "due_on", "completed_at", "completed", "modified_at", "assignee", "assignee.name", "assignee.email", "tags", "custom_fields", "custom_fields.enum_value"));
         List<String> expand = new ArrayList<>(Arrays.asList("id", "created_at", "due_on", "completed_at", "completed", "modified_at", "assignee", "assignee.name", "assignee.email", "tags", "custom_fields", "custom_fields.enum_value"));
         List<String> fields2 = new ArrayList<>(Arrays.asList("id", "name", "notes"));
         List<String> expand2 = new ArrayList<>(Arrays.asList("id", "name", "notes"));
+
+        File file = new File(CSV_Filepath);
+        FileWriter writer = new FileWriter(file, false);
 
         while (true) {
             CollectionRequest tasks = client.tasks.findByProject(project_id).option("limit", 100).option("page_size", 100).option("offset", offset).option("fields", fields).option("expand", expand);
@@ -109,6 +111,9 @@ public class Main {
         }
         writer.close();
         try (Connection conn = DriverManager.getConnection(db_url, props)) {
+            Statement delete = conn.createStatement();
+            String deleteSQL = "TRUNCATE tickets";
+            delete.execute(deleteSQL);
             Statement statement = conn.createStatement();
             String sql = "COPY tickets FROM \'" + Database_path + "\' DELIMITERS \'~\' CSV encoding 'UTF-8'";
             offset = null;
