@@ -32,7 +32,7 @@ public class Main {
 
 
         // Database connection
-        String db_url = "jdbc:postgresql://172.16.138.39:5432/support";
+        String db_url = "jdbc:postgresql://172.16.132.193:5432/support";
         Properties props = new Properties();
         props.setProperty("user", db_user);
         props.setProperty("password", db_pass);
@@ -100,7 +100,7 @@ public class Main {
                     if (i.modifiedAt != null) {
                         due_on = i.modifiedAt.toString();
                     }
-                    writer.write(i.id + '~' + created_at + '~' + completed_at + '~' + i.completed + '~' + modified_at + '~'  + i.name.strip()+ '~' + assignee_name + '~' + assignee_email + '~' + due_on + '~' +i.notes.strip()+ '~' + site + '~' + ticket_time + '~' + topic + '~' + input + "\n");
+                    writer.write(i.id + '~' + created_at + '~' + completed_at + '~' + i.completed + '~' + modified_at + '~'  + "name"+ '~' + assignee_name + '~' + assignee_email + '~' + due_on + '~' +"notes"+ '~' + site + '~' + ticket_time + '~' + topic + '~' + input + "\n");
 
                 }
                 if (result.nextPage != null) {
