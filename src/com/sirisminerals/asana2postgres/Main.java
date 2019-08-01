@@ -130,15 +130,7 @@ public class Main {
                     PreparedStatement ps = conn.prepareStatement(sql2);
                     ps.setString(1, name);
                     ps.setString(2, notes);
-                    if (!ps.execute()) {
-                        SQLWarning statementWarning = ps.getWarnings();
-                        if (statementWarning != null) {
-                            String warningMessage = statementWarning.getMessage();
-                            String warningSQLState = statementWarning.getSQLState();
-                            int warningErrorCode = statementWarning.getErrorCode();
-                            System.out.println("Statement warning : " + warningErrorCode + " Message : " + warningMessage + " SQL state " + warningSQLState);
-                        }
-                    }
+                    ps.execute();
                 }
                 if (result.nextPage != null) {
                     logger.log(Level.INFO, "UPDATE Next Page " + logger.getName());
