@@ -4,7 +4,7 @@ language: java
 
 jdk: openjdk12
 
-script: javac Main.java
+script: javac /src/com/sirisminerals/asana2postgres/Main.java
 
 cache:
   directories:
