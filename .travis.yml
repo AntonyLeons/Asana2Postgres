@@ -4,7 +4,7 @@ language: java
 
 jdk: openjdk12
 
-script: javac $TRAVIS_BUILD_DIR/src/com/sirisminerals/asana2postgres/Main.java
+script: javac mvn clean verify
 
 cache:
   directories:
