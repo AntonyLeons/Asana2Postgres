@@ -95,8 +95,8 @@ public class Main {
                     if (i.modifiedAt != null) {
                         modified_at = i.createdAt.toString();
                     }
-                    if (i.modifiedAt != null) {
-                        due_on = i.modifiedAt.toString();
+                    if (i.dueOn != null) {
+                        due_on = i.dueOn.toString();
                     }
                     writer.write(i.id + '~' + created_at + '~' + completed_at + '~' + i.completed + '~' + modified_at + '~'  + "name"+ '~' + assignee_name + '~' + assignee_email + '~' + due_on + '~' +"notes"+ '~' + site + '~' + ticket_time + '~' + topic + '~' + input + "\n");
 
