@@ -1,4 +1,4 @@
-package com.sirisminerals.asana2postgres;
+package com.siriusminerals.asana2postgres;
 
 import com.asana.Client;
 import com.asana.models.CustomField;
