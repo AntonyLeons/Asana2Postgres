@@ -1,6 +1,6 @@
 <component name="libraryTable">
   <library name="com.asana:asana:0.8.1" type="repository">
-    <properties maven-id="com.asana:asana:0.8.1" />
+    <properties maven-id="com.asana:asana:LATEST" />
     <CLASSES>
       <root url="jar://$PROJECT_DIR$/lib/asana-0.8.1.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/gson-2.3.1.jar!/" />
