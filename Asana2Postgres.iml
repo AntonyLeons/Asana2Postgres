@@ -9,5 +9,6 @@
     <orderEntry type="library" exported="" name="org.postgresql:postgresql:42.2.5" level="project" />
     <orderEntry type="library" exported="" name="com.asana:asana:0.8.1" level="project" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="org.apache.commons:commons-lang3:3.9" level="project" />
   </component>
 </module>
