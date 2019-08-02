@@ -4,7 +4,7 @@ language: java
 
 jdk: openjdk12
 
-script: javac -cp "lib/\*" "src\com\siriusminerals\asana2postgres\Main.java"
+script: javac -cp "lib/*" "src/com/siriusminerals/asana2postgres/Main.java"
 
 cache:
   directories:
