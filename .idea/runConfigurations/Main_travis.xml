@@ -7,6 +7,7 @@
       <env name="TOKEN" value="0/1fe378c15de839054e06c60f8e78563f" />
       <env name="Filepath" value="C:\Users\anton\Documents\GitHub\Asana2Postgres\data.csv" />
       <env name="db_Filepath" value="$PROJECT_DIR$/data.csv" />
+      <env name="db_user" value="postgres" />
       <env name="Path" value="C:\Users\anton\Documents\GitHub\Asana2Postgres" />
     </envs>
     <option name="MAIN_CLASS_NAME" value="com.siriusminerals.asana2postgres.Main" />
