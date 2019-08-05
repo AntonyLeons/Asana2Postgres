@@ -8,6 +8,7 @@ services: postgresql
 before_script:
   - psql -c 'create database support;' -U postgres
   - psql -h localhost -U postgres -d support -a -f "import/create.sql"
+  - psql -U postgres alter user postgres with password '$db_pass' 
 
 script:
   - javac -cp "import/lib/*" "import/src/com/siriusminerals/asana2postgres/Main.java"
