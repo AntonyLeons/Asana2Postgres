@@ -1,19 +1,26 @@
-
+distro: bionic
 language: java
-
-
 
 jdk: openjdk12
 
-
 services: postgresql
 
+addons:
+  postgresql: "11.4"
+before_install:
+  - sudo apt-get update
+  - sudo apt-get --yes remove postgresql\*
+  - sudo apt-get install -y postgresql-11 postgresql-client-11
+  - sudo cp /etc/postgresql/{9.6,11}/main/pg_hba.conf
+  - sudo service postgresql restart 11
+
 before_script:
+  - psql -c 'CREATE ROLE travis SUPERUSER LOGIN CREATEDB;' -U postgres
   - psql -c 'create database support;' -U postgres
   - psql -h localhost -U postgres -d support -a -f "import/create.sql"
   - psql -c "CREATE USER $db_user WITH PASSWORD '$db_pass'";
   - psql -c "GRANT ALL PRIVILEGES ON DATABASE support TO $db_user";
-  - psql -c "GRANT ALL PRIVILEGES ON TABLE public.tickets TO $db_user"
+  - psql -c "GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO $db_user"
 
 script:
   - javac -cp "import/lib/*" "import/src/com/siriusminerals/asana2postgres/Main.java"
