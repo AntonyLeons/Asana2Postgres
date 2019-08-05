@@ -1,0 +1,22 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Main-sirius" type="Application" factoryName="Application">
+    <envs>
+      <env name="db_address" value="172.16.132.193" />
+      <env name="db_port" value="5432" />
+      <env name="db_user" value="postgres" />
+      <env name="db_pass" value="BodyRail%8" />
+      <env name="TOKEN" value="0/1fe378c15de839054e06c60f8e78563f" />
+    </envs>
+    <option name="MAIN_CLASS_NAME" value="com.siriusminerals.asana2postgres.Main" />
+    <module name="Asana2Postgres" />
+    <extension name="coverage">
+      <pattern>
+        <option name="PATTERN" value="com.siriusminerals.asana2postgres.*" />
+        <option name="ENABLED" value="true" />
+      </pattern>
+    </extension>
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
