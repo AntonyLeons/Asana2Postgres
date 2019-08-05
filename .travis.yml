@@ -6,11 +6,12 @@ services: postgresql
 
 
 before_script:
+  - sudo chown postgres "$TRAVIS_BUILD_DIR"
   - sudo chmod -R a+rw "$TRAVIS_BUILD_DIR"
   - psql -c 'create database support;' -U postgres
   - psql -h localhost -U postgres -d support -a -f "import/create.sql"
   - psql -c "CREATE USER $db_user WITH PASSWORD '$db_pass'";
-  - psql -c "alter user $db_user superuser";
+  - psql -d support -c "alter user $db_user superuser";
   - psql -c "GRANT ALL PRIVILEGES ON DATABASE support TO $db_user";
   - psql -d support -c "GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO $db_user"
 
