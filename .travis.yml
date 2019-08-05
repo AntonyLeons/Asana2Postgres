@@ -6,9 +6,9 @@ jdk: openjdk12
 services: postgres
 
 before_script:
-  - "psql -c 'create database myapp_test;' -U postgres"
-  - psql support
-  - psql -h localhost -U postgres -d myDataBase -a -f "import/create.sql"
+  - sudo -i -u postgres
+  - createdb support
+  - -d support -f "import/create.sql"
 
 script:
   - javac -cp "import/lib/*" "import/src/com/siriusminerals/asana2postgres/Main.java"
