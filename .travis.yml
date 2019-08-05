@@ -1,4 +1,3 @@
-
 language: java
 
 jdk: openjdk12
@@ -11,7 +10,7 @@ before_script:
   - psql -h localhost -U postgres -d support -a -f "import/create.sql"
   - psql -c "CREATE USER $db_user WITH PASSWORD '$db_pass'";
   - psql -c "GRANT ALL PRIVILEGES ON DATABASE support TO $db_user";
-  - psql -c "GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO $db_user"
+  - psql -d support -c "GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO $db_user"
 
 script:
   - javac -cp "import/lib/*" "import/src/com/siriusminerals/asana2postgres/Main.java"
