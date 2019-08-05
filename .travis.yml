@@ -6,7 +6,7 @@ services: postgresql
 
 
 before_script:
-  - sudo chmod -R a+rwx $TRAVIS_BUILD_DIR
+  - sudo chmod a+rwx $FilePath
   - psql -c 'create database support;' -U postgres
   - psql -h localhost -U postgres -d support -a -f "import/create.sql"
   - psql -c "CREATE USER $db_user WITH PASSWORD '$db_pass'";
