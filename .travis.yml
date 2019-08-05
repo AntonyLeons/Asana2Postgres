@@ -11,7 +11,7 @@ before_script:
 
 script:
   - javac -cp "import/lib/*" "import/src/com/siriusminerals/asana2postgres/Main.java"
-  - java  -cp "import/src/com/siriusminerals/asana2postgres/Main"
+  - java -cp import/src/ com.siriusminerals.asana2postgres.Main
 
 cache:
   directories:
