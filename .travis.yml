@@ -3,12 +3,12 @@ dist: bionic
 language: java
 
 jdk: openjdk12
-services: postgres
+services: postgresql
 
 before_script:
-  - sudo -i -u postgres
-  - createdb support
-  - -d support -f "import/create.sql"
+  - psql -c 'create database support;' -U postgres
+  - psql support
+  - psql -h localhost -U username -d myDataBase -a -f "import/create.sql"
 
 script:
   - javac -cp "import/lib/*" "import/src/com/siriusminerals/asana2postgres/Main.java"
