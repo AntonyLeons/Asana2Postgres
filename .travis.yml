@@ -9,7 +9,7 @@ before_script:
   - psql -c 'create database support;' -U postgres
   - psql -h localhost -U postgres -d support -a -f "import/create.sql"
   - psql -c "CREATE USER $db_user WITH PASSWORD '$db_pass'";
-  - psql -c "GRANT ALL PRIVLEDGES ON DATABASE support TO $db_user";
+  - psql -c "GRANT ALL PRIVILEGES ON DATABASE support TO $db_user";
 
 
 script:
