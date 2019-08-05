@@ -1,4 +1,4 @@
-dist: bionic
+
 
 language: java
 
@@ -8,7 +8,7 @@ services: postgresql
 before_script:
   - psql -c 'create database support;' -U postgres
   - psql support
-  - psql -h localhost -U username -d myDataBase -a -f "import/create.sql"
+  - psql -h localhost -U postgres -d support -a -f "import/create.sql"
 
 script:
   - javac -cp "import/lib/*" "import/src/com/siriusminerals/asana2postgres/Main.java"
