@@ -6,6 +6,8 @@
       <env name="db_user" value="postgres" />
       <env name="db_pass" value="BodyRail%8" />
       <env name="TOKEN" value="0/1fe378c15de839054e06c60f8e78563f" />
+      <env name="Filepath" value="C:\\Users\\aleons\\OneDrive - Sirius Minerals PLC\\Documents\\GitHub\\Asana2Postgres\\data.csv" />
+      <env name="db_Filepath" value="/media/sf_Asana2Postgres/data.csv" />
     </envs>
     <option name="MAIN_CLASS_NAME" value="com.siriusminerals.asana2postgres.Main" />
     <module name="Asana2Postgres" />

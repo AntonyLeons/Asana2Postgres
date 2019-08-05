@@ -90,13 +90,13 @@ public class Main {
                     created_at = String.valueOf(i.createdAt);
                 }
                 if (i.completedAt != null) {
-                    completed_at = String.valueOf(i.createdAt);
+                    completed_at = String.valueOf(i.completedAt);
                 }
                 if (i.modifiedAt != null) {
-                    modified_at = String.valueOf(i.createdAt);
+                    modified_at = String.valueOf(i.modifiedAt);
                 }
                 if (i.dueOn != null) {
-                    due_on = i.dueOn.toString();
+                    due_on = String.valueOf(i.dueOn);
                 }
                 writer.write(i.id + '~' + created_at + '~' + completed_at + '~' + i.completed + '~' + modified_at + '~' + "name" + '~' + assignee_name + '~' + assignee_email + '~' + due_on + '~' + "notes" + '~' + site + '~' + ticket_time + '~' + topic + '~' + input + "\n");
             }
