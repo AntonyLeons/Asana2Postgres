@@ -18,7 +18,7 @@ dependencies {
 }
 jar {
     manifest {
-        attributes "Main-Class": "asana2postgres.Main"
+        attributes "Main-Class": "Main"
     }
 
     from {
