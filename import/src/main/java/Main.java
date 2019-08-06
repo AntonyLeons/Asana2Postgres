@@ -128,6 +128,7 @@ public class Main {
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Failed to connect to db " + logger.getName());
             e.printStackTrace();
+            System.exit(-1);
         }
     }
 }
