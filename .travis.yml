@@ -12,7 +12,7 @@ before_script:
   - psql -d support -c "GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO $db_user"
 
 script:
-  - cd /import
+  - cd import
   - javac -cp "/lib/*" "/src/main/java/Main.java"
   - gradle jar
   - java -jar /build/libs/asana2postgres-1.0.jar
