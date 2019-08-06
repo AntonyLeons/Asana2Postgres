@@ -1,5 +1,7 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Main-travis" type="Application" factoryName="Application">
+    <option name="ALTERNATIVE_JRE_PATH" value="AdoptOpenJDK (11)" />
+    <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
     <envs>
       <env name="db_address" value="localhost" />
       <env name="db_port" value="5432" />
@@ -10,8 +12,9 @@
       <env name="db_user" value="postgres" />
       <env name="Path" value="C:\Users\anton\Documents\GitHub\Asana2Postgres" />
     </envs>
-    <option name="MAIN_CLASS_NAME" value="com.siriusminerals.asana2postgres.Main" />
-    <module name="Asana2Postgres" />
+    <option name="INCLUDE_PROVIDED_SCOPE" value="true" />
+    <option name="MAIN_CLASS_NAME" value="Main" />
+    <module name="asana2postgres.main" />
     <RunnerSettings RunnerId="Run" />
     <ConfigurationWrapper RunnerId="Run" />
     <method v="2">

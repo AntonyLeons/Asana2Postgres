@@ -1,0 +1,27 @@
+plugins {
+    id 'java'
+    id 'idea'
+}
+
+group 'asana2postgres'
+version '1.0'
+
+sourceCompatibility = 11
+targetCompatibility= 11
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    compile fileTree(dir: 'lib', include: '*.jar')
+}
+jar {
+    manifest {
+        attributes "Main-Class": "asana2postgres.Main"
+    }
+
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}

@@ -1,16 +1,19 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Main-sirius" type="Application" factoryName="Application">
+    <option name="ALTERNATIVE_JRE_PATH" value="AdoptOpenJDK (11)" />
+    <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
     <envs>
       <env name="db_address" value="172.16.132.193" />
       <env name="db_port" value="5432" />
       <env name="db_user" value="postgres" />
       <env name="db_pass" value="BodyRail%8" />
       <env name="TOKEN" value="0/1fe378c15de839054e06c60f8e78563f" />
-      <env name="Filepath" value="C:\\Users\\aleons\\OneDrive - Sirius Minerals PLC\\Documents\\GitHub\\Asana2Postgres\\data.csv" />
-      <env name="db_Filepath" value="/media/sf_Asana2Postgres/data.csv" />
+      <env name="Filepath" value="C:\Users\aleons\OneDrive - Sirius Minerals PLC\Documents\GitHub\Asana2Postgres\import\data.csv" />
+      <env name="db_Filepath" value="/media/sf_Asana2Postgres/import/data.csv" />
     </envs>
-    <option name="MAIN_CLASS_NAME" value="com.siriusminerals.asana2postgres.Main" />
-    <module name="Asana2Postgres" />
+    <option name="INCLUDE_PROVIDED_SCOPE" value="true" />
+    <option name="MAIN_CLASS_NAME" value="Main" />
+    <module name="asana2postgres.main" />
     <extension name="coverage">
       <pattern>
         <option name="PATTERN" value="com.siriusminerals.asana2postgres.*" />
