@@ -14,7 +14,7 @@ before_script:
 script:
   - javac -cp "import/lib/*" "import/src/main/java/Main.java"
   - cd import && gradle jar
-  - java -jar /import/build/libs/asana2postgres-1.0.jar
+  - cd /import/build/libs/ && java -jar asana2postgres-1.0.jar
 cache:
   directories:
   - $HOME/.m2
