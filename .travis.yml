@@ -9,13 +9,10 @@ before_script:
   - psql -c 'create database support;' -U postgres
   - psql -h localhost -U postgres -d support -a -f "import/create.sql"
   - psql -c "CREATE USER $db_user WITH PASSWORD '$db_pass'";
-  - psql -d support -c "alter user $db_user superuser";
-  - psql -c "GRANT ALL PRIVILEGES ON DATABASE support TO $db_user";
   - psql -d support -c "GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO $db_user"
 
 script:
-  - javac -cp "import/lib/*" "import/src/com/siriusminerals/asana2postgres/Main.java"
-  - java -jar Asana2Postgres.jar
+  - javac -cp "import/lib/*" "import/src/main/java/Main.java"
 
 cache:
   directories:
