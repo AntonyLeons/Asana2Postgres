@@ -3,6 +3,7 @@ import com.asana.models.CustomField;
 import com.asana.models.ResultBodyCollection;
 import com.asana.models.Task;
 import com.asana.requests.CollectionRequest;
+import com.google.api.client.util.DateTime;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -34,6 +35,18 @@ public class Main {
 
 
         logger.log(Level.INFO, "Connected " + logger.getName());
+        try (Connection conn = DriverManager.getConnection(db_url, props)) {
+            Statement getModified = conn.createStatement();
+            String getModifedSQL = "SELECT MAX(\"Modified\") FROM public.tickets";
+            ResultSet rs =getModified.executeQuery(getModifedSQL);
+            String max ="";
+            while(rs.next()) {
+              Timestamp maxModified =  rs.getTimestamp("Modified");
+              max =maxModified.toString();
+            }
+
+
+
         String offset = null;
         final Client client = Client.accessToken(Auth_key);
 
@@ -41,13 +54,11 @@ public class Main {
         List<String> expand = new ArrayList<>(Arrays.asList("id", "created_at", "due_on", "completed_at", "completed", "modified_at", "assignee", "assignee.name", "assignee.email", "tags", "custom_fields", "custom_fields.enum_value"));
         List<String> fields2 = new ArrayList<>(Arrays.asList("id", "name", "notes"));
         List<String> expand2 = new ArrayList<>(Arrays.asList("id", "name", "notes"));
-
-        File file = new File(CSV_Filepath);
-        FileWriter writer = new FileWriter(file, false);
+        List<String> search_op = new ArrayList<>(Arrays.asList("id", "name", "notes"));
 
         while (true) {
-            CollectionRequest tasks = client.tasks.findByProject(project_id).option("limit", 100).option("page_size", 100).option("offset", offset).option("fields", fields).option("expand", expand);
-            ResultBodyCollection<Task> result = tasks.executeRaw();
+            CollectionRequest search =client.tasks.searchInWorkspace("2740660799089").option("projects.any","2760706195514").option("modified_on.after",max).option("limit", 100).option("page_size", 100).option("offset", offset).option("fields", fields).option("expand", expand);
+            ResultBodyCollection<Task> result = search.executeRaw();
             for (Task i : result.data) {
                 String assignee_id = "";
                 String created_at = "";
@@ -96,7 +107,15 @@ public class Main {
                 if (i.dueOn != null) {
                     due_on = String.valueOf(i.dueOn);
                 }
-                writer.write(i.id + '~' + created_at + '~' + completed_at + '~' + i.completed + '~' + modified_at + '~' + "name" + '~' + assignee_name + '~' + assignee_email + '~' + due_on + '~' + "notes" + '~' + site + '~' + ticket_time + '~' + topic + '~' + input + "\n");
+                Statement statement = conn.createStatement();
+                String sql = "INSERT INTO public.tickets(" +
+                        "\"ID\", \"Created_Date\", \"Completed_At\", \"Completed\", \"Modified\", \"Name\", \"Assignee\", \"Assignee_Email\", \"Due_On\", \"Notes\", \"Site\", \"Ticket_Time\", \"Topic\", \"Ticket_Input\")" +
+                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+//                INSERT INTO tbl_Employee
+//                VALUES (7,'Ramu')
+//                ON CONFLICT (EmpID)
+//                        DO UPDATE SET EmpName = Excluded.EmpName;
+//                System.out.println(statement.executeUpdate(sql));
             }
             if (result.nextPage != null) {
                 logger.log(Level.INFO, "Next Page " + logger.getName());
@@ -106,11 +125,7 @@ public class Main {
             }
 
         }
-        writer.close();
-        try (Connection conn = DriverManager.getConnection(db_url, props)) {
-            Statement delete = conn.createStatement();
-            String deleteSQL = "TRUNCATE tickets";
-            delete.execute(deleteSQL);
+
             Statement statement = conn.createStatement();
             String sql = "COPY tickets FROM \'" + Database_path + "\' DELIMITERS \'~\' CSV encoding 'UTF-8'";
             offset = null;
