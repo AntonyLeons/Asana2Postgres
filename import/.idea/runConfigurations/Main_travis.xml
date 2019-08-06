@@ -12,6 +12,7 @@
       <env name="db_user" value="postgres" />
       <env name="Path" value="C:\Users\anton\Documents\GitHub\Asana2Postgres" />
     </envs>
+    <option name="INCLUDE_PROVIDED_SCOPE" value="true" />
     <option name="MAIN_CLASS_NAME" value="Main" />
     <module name="asana2postgres.main" />
     <RunnerSettings RunnerId="Run" />
