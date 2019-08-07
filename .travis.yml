@@ -12,9 +12,11 @@ before_script:
   - psql -d support -c "GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO $db_user"
 
 script:
-
-  - javac -cp "sync/lib/*" "sync/src/main/java/Main.java"
-  - cd sync && gradle jar
+  # - cd import && javac -cp "lib/*" "src/main/java/Main.java"
+  # - gradle jar
+  # - cd "$TRAVIS_BUILD_DIR"/import/build/libs/ && java -jar asana2postgres-1.0.jar
+  - cd "$TRAVIS_BUILD_DIR"/sync && javac -cp "lib/*" "src/main/java/Main.java"
+  - gradle jar
   - cd "$TRAVIS_BUILD_DIR"/sync/build/libs/ && java -jar asana-sync-1.0.jar
 cache:
   directories:
