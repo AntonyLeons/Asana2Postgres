@@ -20,11 +20,14 @@ public class Main {
         String project_id = "2760706195514";
         String db_user = System.getenv("db_user");
         String db_pass = System.getenv("db_pass");
+        String ip_address= System.getenv("db_address");
+        String port=System.getenv("db_port"); ///append with : at start
+        String table ="/support"; //append with / at start
         String Auth_key = System.getenv("TOKEN");
 
 
         // Database connection
-        String db_url = "jdbc:postgresql://" + System.getenv("db_address") + "/support";
+        String db_url = "jdbc:postgresql://" + ip_address + port + table;
         Properties props = new Properties();
         props.setProperty("user", db_user);
         props.setProperty("password", db_pass);

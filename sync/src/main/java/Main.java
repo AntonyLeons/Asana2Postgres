@@ -23,8 +23,8 @@ public class Main {
         String db_user = System.getenv("db_user");
         String db_pass = System.getenv("db_pass");
         String ip_address= System.getenv("db_address");
-        String port=System.getenv("db_port");
-        String table ="/support";
+        String port=System.getenv("db_port"); // append with : at start
+        String table ="/support"; // append with / at start
         String Auth_key = System.getenv("TOKEN");
 
 
