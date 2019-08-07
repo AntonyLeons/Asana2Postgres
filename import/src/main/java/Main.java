@@ -17,12 +17,13 @@ public class Main {
     public static void main(String[] args) throws IOException {
         final Logger logger = Logger.getLogger(Main.class.getName());
         //config
-        String project_id = "2760706195514";
+        String project_id = "2760706195514"; //can retrieve this from url
         String db_user = System.getenv("db_user");
         String db_pass = System.getenv("db_pass");
         String ip_address= System.getenv("db_address");
         String port=System.getenv("db_port"); ///append with : at start
         String db ="/support"; //append with / at start
+        String table="public.tickets"; //Include schema
         String Auth_key = System.getenv("TOKEN");
 
 
@@ -41,7 +42,7 @@ public class Main {
         try (Connection conn = DriverManager.getConnection(db_url, props)) {
             logger.log(Level.INFO, "Connected " + logger.getName());
             Statement delete = conn.createStatement();
-            String deleteSQL = "TRUNCATE tickets";
+            String deleteSQL = "TRUNCATE "+table;
             delete.execute(deleteSQL);
             while (true) {
                 CollectionRequest tasks = client.tasks.findByProject(project_id).option("limit", 100).option("page_size", 100).option("offset", offset).option("fields", fields).option("expand", expand);
@@ -101,7 +102,7 @@ public class Main {
                     if (i.notes != null) {
                         notes = i.notes;
                     }
-                    String sql = "INSERT INTO public.tickets(\"ID\", \"Created_Date\", \"Completed_At\", \"Completed\", \"Modified\", \"Name\", \"Assignee\", \"Assignee_Email\", \"Due_On\", \"Notes\", \"Site\", \"Ticket_Time\", \"Topic\", \"Ticket_Input\")" +
+                    String sql = "INSERT INTO "+table+"(\"ID\", \"Created_Date\", \"Completed_At\", \"Completed\", \"Modified\", \"Name\", \"Assignee\", \"Assignee_Email\", \"Due_On\", \"Notes\", \"Site\", \"Ticket_Time\", \"Topic\", \"Ticket_Input\")" +
                             "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
                     PreparedStatement ps = conn.prepareStatement(sql);
                     ps.setBigDecimal(1, new BigDecimal(i.id));
