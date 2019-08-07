@@ -4,7 +4,6 @@ jdk: openjdk11
 
 services: postgresql
 
-
 before_script:
   - psql -c 'create database support;' -U postgres
   - psql -h localhost -U postgres -d support -a -f "import/create.sql"
@@ -18,6 +17,7 @@ script:
   - cd "$TRAVIS_BUILD_DIR"/sync && javac -cp "lib/*" "src/main/java/Main.java"
   - gradle jar
   - cd "$TRAVIS_BUILD_DIR"/sync/build/libs/ && java -jar asana-sync-1.0.jar
+  
 cache:
   directories:
   - $HOME/.m2
