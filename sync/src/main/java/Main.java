@@ -7,8 +7,10 @@ import com.asana.requests.CollectionRequest;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.*;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.*;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -20,11 +22,14 @@ public class Main {
         String project_id = "2760706195514";
         String db_user = System.getenv("db_user");
         String db_pass = System.getenv("db_pass");
+        String ip_address= System.getenv("db_address");
+        String port=System.getenv("db_port");
+        String table ="/support";
         String Auth_key = System.getenv("TOKEN");
 
 
         // Database connection
-        String db_url = "jdbc:postgresql://" + System.getenv("db_address") + "/support";
+        String db_url = "jdbc:postgresql://" + ip_address + port + table;
         Properties props = new Properties();
         props.setProperty("user", db_user);
         props.setProperty("password", db_pass);
@@ -42,11 +47,12 @@ public class Main {
             ResultSet rs =getModified.executeQuery(getModifiedSQL);
             String max ="";
             while(rs.next()) {
-                Timestamp maxModified =  rs.getTimestamp("Modified");
-                max =maxModified.toString();
+                Timestamp maxModified =  rs.getTimestamp("max");
+                max = new SimpleDateFormat("yyyy-MM-dd").format(maxModified);
             }
             while (true) {
-                CollectionRequest search =client.tasks.searchInWorkspace("2740660799089").option("projects.any","2760706195514").option("modified_on.after",max).option("limit", 100).option("page_size", 100).option("offset", offset).option("fields", fields).option("expand", expand);
+               // CollectionRequest search =client.tasks.searchInWorkspace("2740660799089").option("projects.any","2760706195514").option("modified_on.after",max).option("limit", 100).option("page_size", 100).option("offset", offset).option("fields", fields).option("expand", expand);
+                 CollectionRequest search =client.tasks.searchInWorkspace("2740660799089").query("modified_on.after",max).option("limit", 100).option("page_size", 100).option("offset", offset).option("fields", fields).option("expand", expand);
                 ResultBodyCollection<Task> result = search.executeRaw();
                 for (Task i : result.data) {
                     String assignee_id = "";
@@ -104,7 +110,9 @@ public class Main {
                         notes = i.notes;
                     }
                     String sql = "INSERT INTO public.tickets(\"ID\", \"Created_Date\", \"Completed_At\", \"Completed\", \"Modified\", \"Name\", \"Assignee\", \"Assignee_Email\", \"Due_On\", \"Notes\", \"Site\", \"Ticket_Time\", \"Topic\", \"Ticket_Input\")" +
-                            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+                            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) " +
+                            "ON CONFLICT (\"ID\") DO UPDATE SET " +
+                            "\"Created_Date\" = excluded.\"Created_Date\", \"Completed_At\" = excluded.\"Completed_At\", \"Completed\" = excluded.\"Completed\", \"Modified\"=excluded.\"Modified\", \"Name\"=excluded.\"Name\", \"Assignee\"=excluded.\"Assignee\", \"Assignee_Email\"=excluded.\"Assignee_Email\", \"Due_On\"=excluded.\"Due_On\", \"Notes\"=excluded.\"Notes\", \"Site\"=excluded.\"Site\", \"Ticket_Time\"=excluded.\"Ticket_Time\",\"Topic\"=excluded.\"Topic\",\"Ticket_Input\"=excluded.\"Ticket_Input\"";
                     PreparedStatement ps = conn.prepareStatement(sql);
                     ps.setBigDecimal(1, new BigDecimal(i.id));
                     ps.setTimestamp(2, created_at);
