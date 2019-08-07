@@ -15,6 +15,9 @@ script:
   - javac -cp "import/lib/*" "import/src/main/java/Main.java"
   - cd import && gradle jar
   - cd "$TRAVIS_BUILD_DIR"/import/build/libs/ && java -jar asana2postgres-1.0.jar
+  - javac -cp "sync/lib/*" "sync/src/main/java/Main.java"
+  - cd sync && gradle jar
+  - cd "$TRAVIS_BUILD_DIR"/sync/build/libs/ && java -jar asana-sync-1.0.jar
 cache:
   directories:
   - $HOME/.m2
