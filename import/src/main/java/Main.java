@@ -22,12 +22,12 @@ public class Main {
         String db_pass = System.getenv("db_pass");
         String ip_address= System.getenv("db_address");
         String port=System.getenv("db_port"); ///append with : at start
-        String table ="/support"; //append with / at start
+        String db ="/support"; //append with / at start
         String Auth_key = System.getenv("TOKEN");
 
 
         // Database connection
-        String db_url = "jdbc:postgresql://" + ip_address + port + table;
+        String db_url = "jdbc:postgresql://" + ip_address + port + db;
         Properties props = new Properties();
         props.setProperty("user", db_user);
         props.setProperty("password", db_pass);

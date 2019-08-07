@@ -24,12 +24,12 @@ public class Main {
         String db_pass = System.getenv("db_pass");
         String ip_address= System.getenv("db_address");
         String port=System.getenv("db_port"); // append with : at start
-        String table ="/support"; // append with / at start
+        String db ="/support"; // append with / at start
         String Auth_key = System.getenv("TOKEN");
 
 
         // Database connection
-        String db_url = "jdbc:postgresql://" + ip_address + port + table;
+        String db_url = "jdbc:postgresql://" + ip_address + port + db;
         Properties props = new Properties();
         props.setProperty("user", db_user);
         props.setProperty("password", db_pass);
@@ -51,8 +51,7 @@ public class Main {
                 max = new SimpleDateFormat("yyyy-MM-dd").format(maxModified);
             }
             while (true) {
-               // CollectionRequest search =client.tasks.searchInWorkspace("2740660799089").option("projects.any","2760706195514").option("modified_on.after",max).option("limit", 100).option("page_size", 100).option("offset", offset).option("fields", fields).option("expand", expand);
-                 CollectionRequest search =client.tasks.searchInWorkspace("2740660799089").query("modified_on.after",max).option("limit", 100).option("page_size", 100).option("offset", offset).option("fields", fields).option("expand", expand);
+                CollectionRequest search =client.tasks.searchInWorkspace("2740660799089").query("modified_on.after",max).query("projects.any",project_id).option("limit", 100).option("page_size", 100).option("offset", offset).option("fields", fields).option("expand", expand);
                 ResultBodyCollection<Task> result = search.executeRaw();
                 for (Task i : result.data) {
                     String assignee_id = "";
