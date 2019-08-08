@@ -37,6 +37,7 @@ public class Main {
 
         String offset = null;
         final Client client = Client.accessToken(Auth_key);
+        client.headers.put("Asana-Enable","string_ids"); // remove after 2020-02-11
         List<String> fields = new ArrayList<>(Arrays.asList("gid", "created_at", "due_on", "completed_at", "completed", "modified_at", "name", "notes", "assignee", "assignee.name", "assignee.email", "tags", "custom_fields", "custom_fields.enum_value"));
         List<String> expand = new ArrayList<>(Arrays.asList("gid", "created_at", "due_on", "completed_at", "completed", "modified_at", "name", "notes", "assignee", "assignee.name", "assignee.email", "tags", "custom_fields", "custom_fields.enum_value"));
         try (Connection conn = DriverManager.getConnection(db_url, props)) {

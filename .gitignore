@@ -2,3 +2,5 @@
 *.gradle
 /import/*.gradle
 /sync/*.gradle
+*.bin
+*.lock
