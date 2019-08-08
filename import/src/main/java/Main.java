@@ -37,8 +37,8 @@ public class Main {
 
         String offset = null;
         final Client client = Client.accessToken(Auth_key);
-        List<String> fields = new ArrayList<>(Arrays.asList("id", "created_at", "due_on", "completed_at", "completed", "modified_at", "name", "notes", "assignee", "assignee.name", "assignee.email", "tags", "custom_fields", "custom_fields.enum_value"));
-        List<String> expand = new ArrayList<>(Arrays.asList("id", "created_at", "due_on", "completed_at", "completed", "modified_at", "name", "notes", "assignee", "assignee.name", "assignee.email", "tags", "custom_fields", "custom_fields.enum_value"));
+        List<String> fields = new ArrayList<>(Arrays.asList("gid", "created_at", "due_on", "completed_at", "completed", "modified_at", "name", "notes", "assignee", "assignee.name", "assignee.email", "tags", "custom_fields", "custom_fields.enum_value"));
+        List<String> expand = new ArrayList<>(Arrays.asList("gid", "created_at", "due_on", "completed_at", "completed", "modified_at", "name", "notes", "assignee", "assignee.name", "assignee.email", "tags", "custom_fields", "custom_fields.enum_value"));
         try (Connection conn = DriverManager.getConnection(db_url, props)) {
             logger.log(Level.INFO, "Connected " + logger.getName());
             Statement delete = conn.createStatement();
@@ -105,7 +105,7 @@ public class Main {
                     String sql = "INSERT INTO "+table+"(\"ID\", \"Created_Date\", \"Completed_At\", \"Completed\", \"Modified\", \"Name\", \"Assignee\", \"Assignee_Email\", \"Due_On\", \"Notes\", \"Site\", \"Ticket_Time\", \"Topic\", \"Ticket_Input\")" +
                             "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
                     PreparedStatement ps = conn.prepareStatement(sql);
-                    ps.setBigDecimal(1, new BigDecimal(i.id));
+                    ps.setString(1, i.gid);
                     ps.setTimestamp(2, created_at);
                     ps.setTimestamp(3, completed_at);
                     ps.setBoolean(4, i.completed);

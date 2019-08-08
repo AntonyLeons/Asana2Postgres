@@ -1,6 +1,6 @@
 CREATE TABLE public.tickets
 (
-    "ID" bigint NOT NULL,
+    "ID" character varying(31) NOT NULL,
     "Created_Date" timestamp(4) with time zone,
     "Completed_At" timestamp(4) with time zone,
     "Completed" boolean,

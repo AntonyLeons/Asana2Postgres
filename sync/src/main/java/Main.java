@@ -39,8 +39,8 @@ public class Main {
 
         String offset = null;
         final Client client = Client.accessToken(Auth_key);
-        List<String> fields = new ArrayList<>(Arrays.asList("id", "created_at", "due_on", "completed_at", "completed", "modified_at", "name", "notes", "assignee", "assignee.name", "assignee.email", "tags", "custom_fields", "custom_fields.enum_value"));
-        List<String> expand = new ArrayList<>(Arrays.asList("id", "created_at", "due_on", "completed_at", "completed", "modified_at", "name", "notes", "assignee", "assignee.name", "assignee.email", "tags", "custom_fields", "custom_fields.enum_value"));
+        List<String> fields = new ArrayList<>(Arrays.asList("gid", "created_at", "due_on", "completed_at", "completed", "modified_at", "name", "notes", "assignee", "assignee.name", "assignee.email", "tags", "custom_fields", "custom_fields.enum_value"));
+        List<String> expand = new ArrayList<>(Arrays.asList("gid", "created_at", "due_on", "completed_at", "completed", "modified_at", "name", "notes", "assignee", "assignee.name", "assignee.email", "tags", "custom_fields", "custom_fields.enum_value"));
         try (Connection conn = DriverManager.getConnection(db_url, props)) {
             logger.log(Level.INFO, "Connected " + logger.getName());
             Statement getModified = conn.createStatement();
@@ -114,7 +114,7 @@ public class Main {
                             "ON CONFLICT (\"ID\") DO UPDATE SET " +
                             "\"Created_Date\" = excluded.\"Created_Date\", \"Completed_At\" = excluded.\"Completed_At\", \"Completed\" = excluded.\"Completed\", \"Modified\"=excluded.\"Modified\", \"Name\"=excluded.\"Name\", \"Assignee\"=excluded.\"Assignee\", \"Assignee_Email\"=excluded.\"Assignee_Email\", \"Due_On\"=excluded.\"Due_On\", \"Notes\"=excluded.\"Notes\", \"Site\"=excluded.\"Site\", \"Ticket_Time\"=excluded.\"Ticket_Time\",\"Topic\"=excluded.\"Topic\",\"Ticket_Input\"=excluded.\"Ticket_Input\"";
                     PreparedStatement ps = conn.prepareStatement(sql);
-                    ps.setBigDecimal(1, new BigDecimal(i.id));
+                    ps.setString(1, i.gid);
                     ps.setTimestamp(2, created_at);
                     ps.setTimestamp(3, completed_at);
                     ps.setBoolean(4, i.completed);
