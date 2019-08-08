@@ -1,5 +1,6 @@
 import com.asana.Client;
 import com.asana.models.CustomField;
+import com.asana.models.Event;
 import com.asana.models.ResultBodyCollection;
 import com.asana.models.Task;
 import com.asana.requests.CollectionRequest;
@@ -13,6 +14,7 @@ import java.util.*;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.prefs.Preferences;
 
 public class Main {
 
@@ -44,6 +46,7 @@ public class Main {
         List<String> expand = new ArrayList<>(Arrays.asList("gid", "created_at", "due_on", "completed_at", "completed", "modified_at", "name", "notes", "assignee", "assignee.name", "assignee.email", "tags", "custom_fields", "custom_fields.enum_value"));
         try (Connection conn = DriverManager.getConnection(db_url, props)) {
             logger.log(Level.INFO, "Connected " + logger.getName());
+
             Statement getModified = conn.createStatement();
             String getModifiedSQL = "SELECT MAX(\"Modified\") FROM "+table;
             ResultSet rs =getModified.executeQuery(getModifiedSQL);
@@ -52,6 +55,27 @@ public class Main {
                 Timestamp maxModified =  rs.getTimestamp("max");
                 max = new SimpleDateFormat("yyyy-MM-dd").format(maxModified);
             }
+
+            Preferences values = Preferences.userRoot().node("asana-sync");  //find deleted tasks
+            String Sync_Token=values.get("Sync_Token", "");
+            Sync_Token="a78a5975272447e80dfe040b1f88c3b4:0";
+            CollectionRequest events= client.events.get(project_id,Sync_Token);
+            ResultBodyCollection<Event> sync_data=events.executeRaw();
+             values.put("Sync_Token",sync_data.sync);
+
+                for (Event a:sync_data.data) {
+                    if(a!=null)
+                    {
+                        if("deleted".equals(a.action)) {
+                            String sql ="DELETE FROM public.tickets WHERE \"ID\" =?";
+                            PreparedStatement ps = conn.prepareStatement(sql);
+                            ps.setString(1, a.resource.gid);
+                            ps.execute();
+                        }
+                    }
+                }
+
+
             while (true) {
                 CollectionRequest search =client.tasks.searchInWorkspace("2740660799089").query("modified_on.after",max).query("projects.any",project_id).option("limit", 100).option("page_size", 100).option("offset", offset).option("fields", fields).option("expand", expand);
                 ResultBodyCollection<Task> result = search.executeRaw();
