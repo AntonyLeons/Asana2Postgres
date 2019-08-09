@@ -5,7 +5,6 @@ import com.asana.models.Task;
 import com.asana.requests.CollectionRequest;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.sql.*;
 import java.time.Instant;
 import java.util.*;
@@ -20,10 +19,10 @@ public class Main {
         String project_id = "2760706195514"; //can retrieve this from url
         String db_user = System.getenv("db_user");
         String db_pass = System.getenv("db_pass");
-        String ip_address= System.getenv("db_address");
-        String port=System.getenv("db_port"); ///append with : at start
-        String db ="/support"; //append with / at start
-        String table="public.tickets"; //Include schema
+        String ip_address = System.getenv("db_address");
+        String port = System.getenv("db_port"); ///append with : at start
+        String db = "/support"; //append with / at start
+        String table = "public.tickets"; //Include schema
         String Auth_key = System.getenv("TOKEN");
 
 
@@ -34,16 +33,16 @@ public class Main {
         props.setProperty("password", db_pass);
         props.setProperty("ssl", "false");
 
-
+        int counter = 0;
         String offset = null;
         final Client client = Client.accessToken(Auth_key);
-        client.headers.put("Asana-Enable","string_ids"); // remove after 2020-02-11
+        client.headers.put("Asana-Enable", "string_ids"); // remove after 2020-02-11
         List<String> fields = new ArrayList<>(Arrays.asList("gid", "created_at", "due_on", "completed_at", "completed", "modified_at", "name", "notes", "assignee", "assignee.name", "assignee.email", "tags", "custom_fields", "custom_fields.enum_value"));
         List<String> expand = new ArrayList<>(Arrays.asList("gid", "created_at", "due_on", "completed_at", "completed", "modified_at", "name", "notes", "assignee", "assignee.name", "assignee.email", "tags", "custom_fields", "custom_fields.enum_value"));
         try (Connection conn = DriverManager.getConnection(db_url, props)) {
             logger.log(Level.INFO, "Connected " + logger.getName());
             Statement delete = conn.createStatement();
-            String deleteSQL = "TRUNCATE "+table;
+            String deleteSQL = "TRUNCATE " + table;
             delete.execute(deleteSQL);
             while (true) {
                 CollectionRequest tasks = client.tasks.findByProject(project_id).option("limit", 100).option("page_size", 100).option("offset", offset).option("fields", fields).option("expand", expand);
@@ -68,22 +67,30 @@ public class Main {
                         assignee_email = i.assignee.email;
                     }
                     Iterator<CustomField> listIterator = i.customFields.iterator();
-                    CustomField a = listIterator.next();
-
-                    if (a != null && a.enumValue != null) {
-                        site = a.enumValue.name;
+                    CustomField a;
+                    if (listIterator.hasNext()) {
+                        a = listIterator.next();
+                        if (a != null && a.enumValue != null) {
+                            site = a.enumValue.name;
+                        }
                     }
-                    a = listIterator.next();
-                    if (a != null && a.enumValue != null) {
-                        ticket_time = a.enumValue.name;
+                    if (listIterator.hasNext()) {
+                        a = listIterator.next();
+                        if (a != null && a.enumValue != null) {
+                            ticket_time = a.enumValue.name;
+                        }
                     }
-                    a = listIterator.next();
-                    if (a != null && a.enumValue != null) {
-                        topic = a.enumValue.name;
+                    if (listIterator.hasNext()) {
+                        a = listIterator.next();
+                        if (a != null && a.enumValue != null) {
+                            topic = a.enumValue.name;
+                        }
                     }
-                    a = listIterator.next();
-                    if (a != null && a.enumValue != null) {
-                        input = a.enumValue.name;
+                    if (listIterator.hasNext()) {
+                        a = listIterator.next();
+                        if (a != null && a.enumValue != null) {
+                            input = a.enumValue.name;
+                        }
                     }
                     if (i.createdAt != null) {
                         created_at = Timestamp.from(Instant.ofEpochMilli(i.createdAt.getValue()));
@@ -103,7 +110,7 @@ public class Main {
                     if (i.notes != null) {
                         notes = i.notes;
                     }
-                    String sql = "INSERT INTO "+table+"(\"ID\", \"Created_Date\", \"Completed_At\", \"Completed\", \"Modified\", \"Name\", \"Assignee\", \"Assignee_Email\", \"Due_On\", \"Notes\", \"Site\", \"Ticket_Time\", \"Topic\", \"Ticket_Input\")" +
+                    String sql = "INSERT INTO " + table + "(\"ID\", \"Created_Date\", \"Completed_At\", \"Completed\", \"Modified\", \"Name\", \"Assignee\", \"Assignee_Email\", \"Due_On\", \"Notes\", \"Site\", \"Ticket_Time\", \"Topic\", \"Ticket_Input\")" +
                             "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
                     PreparedStatement ps = conn.prepareStatement(sql);
                     ps.setString(1, i.gid);
@@ -121,11 +128,13 @@ public class Main {
                     ps.setString(13, topic);
                     ps.setString(14, input);
                     ps.execute();
+                    counter++;
                 }
                 if (result.nextPage != null) {
                     logger.log(Level.INFO, "Next Page " + logger.getName());
                     offset = result.nextPage.offset;
                 } else {
+                    System.out.println(counter + " tasks added");
                     break;
                 }
 
