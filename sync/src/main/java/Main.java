@@ -6,12 +6,10 @@ import com.asana.models.Task;
 import com.asana.requests.CollectionRequest;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.*;
-import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
@@ -24,10 +22,10 @@ public class Main {
         String project_id = "2760706195514"; //can retrieve this from url
         String db_user = System.getenv("db_user");
         String db_pass = System.getenv("db_pass");
-        String ip_address= System.getenv("db_address");
-        String port=System.getenv("db_port"); // append with : at start
-        String db ="/support"; // append with / at start
-        String table="public.tickets"; //Include schema
+        String ip_address = System.getenv("db_address");
+        String port = System.getenv("db_port"); // append with : at start
+        String db = "/support"; // append with / at start
+        String table = "public.tickets"; //Include schema
         String Auth_key = System.getenv("TOKEN");
 
 
@@ -41,43 +39,27 @@ public class Main {
 
         String offset = null;
         final Client client = Client.accessToken(Auth_key);
-        client.headers.put("Asana-Enable","string_ids,new_sections"); // remove after 2020-02-11
+        client.headers.put("Asana-Enable", "string_ids,new_sections"); // remove after 2020-02-11
         List<String> fields = new ArrayList<>(Arrays.asList("gid", "created_at", "due_on", "completed_at", "completed", "modified_at", "name", "notes", "assignee", "assignee.name", "assignee.email", "tags", "custom_fields", "custom_fields.enum_value"));
         List<String> expand = new ArrayList<>(Arrays.asList("gid", "created_at", "due_on", "completed_at", "completed", "modified_at", "name", "notes", "assignee", "assignee.name", "assignee.email", "tags", "custom_fields", "custom_fields.enum_value"));
+
         try (Connection conn = DriverManager.getConnection(db_url, props)) {
             logger.log(Level.INFO, "Connected " + logger.getName());
 
             Statement getModified = conn.createStatement();
-            String getModifiedSQL = "SELECT MAX(\"Modified\") FROM "+table;
-            ResultSet rs =getModified.executeQuery(getModifiedSQL);
-            String max ="";
-            while(rs.next()) {
-                Timestamp maxModified =  rs.getTimestamp("max");
+            String getModifiedSQL = "SELECT MAX(\"Modified\") FROM " + table;
+            ResultSet rs = getModified.executeQuery(getModifiedSQL);
+            String max = "";
+            while (rs.next()) {
+                Timestamp maxModified = rs.getTimestamp("max");
                 max = new SimpleDateFormat("yyyy-MM-dd").format(maxModified);
             }
 
-            Preferences values = Preferences.userRoot().node("asana-sync");  //find deleted tasks
-            String Sync_Token=values.get("Sync_Token", "");
-            Sync_Token="a78a5975272447e80dfe040b1f88c3b4:0";
-            CollectionRequest events= client.events.get(project_id,Sync_Token);
-            ResultBodyCollection<Event> sync_data=events.executeRaw();
-             values.put("Sync_Token",sync_data.sync);
 
-                for (Event a:sync_data.data) {
-                    if(a!=null)
-                    {
-                        if("deleted".equals(a.action)) {
-                            String sql ="DELETE FROM public.tickets WHERE \"ID\" =?";
-                            PreparedStatement ps = conn.prepareStatement(sql);
-                            ps.setString(1, a.resource.gid);
-                            ps.execute();
-                        }
-                    }
-                }
-
+            Run_Sync(conn, client, project_id);
 
             while (true) {
-                CollectionRequest search =client.tasks.searchInWorkspace("2740660799089").query("modified_on.after",max).query("projects.any",project_id).option("limit", 100).option("page_size", 100).option("offset", offset).option("fields", fields).option("expand", expand);
+                CollectionRequest search = client.tasks.searchInWorkspace("2740660799089").query("modified_on.after", max).query("projects.any", project_id).option("limit", 100).option("page_size", 100).option("offset", offset).option("fields", fields).option("expand", expand);
                 ResultBodyCollection<Task> result = search.executeRaw();
                 for (Task i : result.data) {
                     String assignee_id = "";
@@ -134,7 +116,7 @@ public class Main {
                     if (i.notes != null) {
                         notes = i.notes;
                     }
-                    String sql = "INSERT INTO "+table+"(\"ID\", \"Created_Date\", \"Completed_At\", \"Completed\", \"Modified\", \"Name\", \"Assignee\", \"Assignee_Email\", \"Due_On\", \"Notes\", \"Site\", \"Ticket_Time\", \"Topic\", \"Ticket_Input\")" +
+                    String sql = "INSERT INTO " + table + "(\"ID\", \"Created_Date\", \"Completed_At\", \"Completed\", \"Modified\", \"Name\", \"Assignee\", \"Assignee_Email\", \"Due_On\", \"Notes\", \"Site\", \"Ticket_Time\", \"Topic\", \"Ticket_Input\")" +
                             "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) " +
                             "ON CONFLICT (\"ID\") DO UPDATE SET " +
                             "\"Created_Date\" = excluded.\"Created_Date\", \"Completed_At\" = excluded.\"Completed_At\", \"Completed\" = excluded.\"Completed\", \"Modified\"=excluded.\"Modified\", \"Name\"=excluded.\"Name\", \"Assignee\"=excluded.\"Assignee\", \"Assignee_Email\"=excluded.\"Assignee_Email\", \"Due_On\"=excluded.\"Due_On\", \"Notes\"=excluded.\"Notes\", \"Site\"=excluded.\"Site\", \"Ticket_Time\"=excluded.\"Ticket_Time\",\"Topic\"=excluded.\"Topic\",\"Ticket_Input\"=excluded.\"Ticket_Input\"";
@@ -167,6 +149,26 @@ public class Main {
             logger.log(Level.SEVERE, "Failed to connect to db " + logger.getName());
             e.printStackTrace();
             System.exit(-1);
+        }
+    }
+
+    public static void Run_Sync(Connection conn, Client client, String project_id) throws IOException, SQLException {
+        Preferences values = Preferences.userRoot().node("asana-sync");  //find deleted tasks
+        String Sync_Token = values.get("Sync_Token", "");
+//            Sync_Token="22f1366eda6c6d3d76be3abf506dfb04:1";
+        CollectionRequest events = client.events.get(project_id, Sync_Token);
+        ResultBodyCollection<Event> sync_data = events.executeRaw();
+        values.put("Sync_Token", sync_data.sync);
+
+        for (Event a : sync_data.data) {
+            if (a != null) {
+                if ("deleted".equals(a.action)) {
+                    String sql = "DELETE FROM public.tickets WHERE \"ID\" =?";
+                    PreparedStatement ps = conn.prepareStatement(sql);
+                    ps.setString(1, a.resource.gid);
+                    ps.execute();
+                }
+            }
         }
     }
 }
