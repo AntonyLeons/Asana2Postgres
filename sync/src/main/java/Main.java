@@ -56,7 +56,7 @@ public class Main {
             }
 
             if (!("true".equals(System.getenv("TRAVIS")))) {
-                Run_Sync(conn, client, project_id);
+                run_Sync(conn, client, project_id);
             }
             while (true) {
                 CollectionRequest search = client.tasks.searchInWorkspace("2740660799089").query("modified_on.after", max).query("projects.any", project_id).option("limit", 100).option("page_size", 100).option("offset", offset).option("fields", fields).option("expand", expand);
@@ -161,7 +161,7 @@ public class Main {
         }
     }
 
-    public static void Run_Sync(Connection conn, Client client, String project_id) throws IOException, SQLException {
+    public static void run_Sync(Connection conn, Client client, String project_id) throws IOException, SQLException {
         Preferences values = Preferences.userRoot().node("asana-sync");  //find deleted tasks
         String Sync_Token = values.get("Sync_Token", "");
 //            Sync_Token="22f1366eda6c6d3d76be3abf506dfb04:1";
@@ -171,13 +171,11 @@ public class Main {
         values.put("Sync_Token", sync_data.sync);
 
         for (Event a : sync_data.data) {
-            if (a != null) {
-                if ("deleted".equals(a.action)) {
-                    String sql = "DELETE FROM public.tickets WHERE \"ID\" =?";
-                    PreparedStatement ps = conn.prepareStatement(sql);
-                    ps.setString(1, a.resource.gid);
-                    ps.execute();
-                }
+            if (a != null && "deleted".equals(a.action)) {
+                String sql = "DELETE FROM public.tickets WHERE \"ID\" =?";
+                PreparedStatement ps = conn.prepareStatement(sql);
+                ps.setString(1, a.resource.gid);
+                ps.execute();
             }
         }
     }
