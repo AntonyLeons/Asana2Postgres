@@ -56,13 +56,13 @@ public class Main {
             }
 
             if (!("true".equals(System.getenv("TRAVIS")))) {
-                run_Sync(conn, client, project_id);
+                runSync(conn, client, project_id);
             }
             while (true) {
                 CollectionRequest search = client.tasks.searchInWorkspace("2740660799089").query("modified_on.after", max).query("projects.any", project_id).option("limit", 100).option("page_size", 100).option("offset", offset).option("fields", fields).option("expand", expand);
                 ResultBodyCollection<Task> result = search.executeRaw();
                 for (Task i : result.data) {
-                    String assignee_id = "";
+//                    String assignee_id = "";
                     Timestamp created_at = null;
                     Timestamp completed_at = null;
                     Timestamp modified_at = null;
@@ -76,7 +76,7 @@ public class Main {
                     String topic = "";
                     String input = "";
                     if (i.assignee != null) {
-                        assignee_id = i.assignee.id;
+//                        assignee_id = i.assignee.id;
                         assignee_name = i.assignee.name;
                         assignee_email = i.assignee.email;
                     }
@@ -161,7 +161,7 @@ public class Main {
         }
     }
 
-    public static void run_Sync(Connection conn, Client client, String project_id) throws IOException, SQLException {
+    public static void runSync(Connection conn, Client client, String project_id) throws IOException, SQLException {
         Preferences values = Preferences.userRoot().node("asana-sync");  //find deleted tasks
         String Sync_Token = values.get("Sync_Token", "");
 //            Sync_Token="22f1366eda6c6d3d76be3abf506dfb04:1";

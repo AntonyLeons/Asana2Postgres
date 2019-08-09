@@ -48,7 +48,7 @@ public class Main {
                 CollectionRequest tasks = client.tasks.findByProject(project_id).option("limit", 100).option("page_size", 100).option("offset", offset).option("fields", fields).option("expand", expand);
                 ResultBodyCollection<Task> result = tasks.executeRaw();
                 for (Task i : result.data) {
-                    String assignee_id = "";
+//                    String assignee_id = "";
                     Timestamp created_at = null;
                     Timestamp completed_at = null;
                     Timestamp modified_at = null;
@@ -62,7 +62,7 @@ public class Main {
                     String topic = "";
                     String input = "";
                     if (i.assignee != null) {
-                        assignee_id = i.assignee.id;
+//                        assignee_id = i.assignee.id;
                         assignee_name = i.assignee.name;
                         assignee_email = i.assignee.email;
                     }
