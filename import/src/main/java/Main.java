@@ -33,7 +33,7 @@ public class Main {
         props.setProperty("password", db_pass);
         props.setProperty("ssl", "false");
 
-
+        int counter = 0;
         String offset = null;
         final Client client = Client.accessToken(Auth_key);
         client.headers.put("Asana-Enable", "string_ids"); // remove after 2020-02-11
@@ -128,11 +128,13 @@ public class Main {
                     ps.setString(13, topic);
                     ps.setString(14, input);
                     ps.execute();
+                    counter++;
                 }
                 if (result.nextPage != null) {
                     logger.log(Level.INFO, "Next Page " + logger.getName());
                     offset = result.nextPage.offset;
                 } else {
+                    System.out.println(counter + " tasks added");
                     break;
                 }
 
