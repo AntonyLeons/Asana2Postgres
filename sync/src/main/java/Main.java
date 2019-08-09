@@ -81,22 +81,30 @@ public class Main {
                         assignee_email = i.assignee.email;
                     }
                     Iterator<CustomField> listIterator = i.customFields.iterator();
-                    CustomField a = listIterator.next();
-
-                    if (a != null && a.enumValue != null) {
-                        site = a.enumValue.name;
+                    CustomField a;
+                    if (listIterator.hasNext()) {
+                        a = listIterator.next();
+                        if (a != null && a.enumValue != null) {
+                            site = a.enumValue.name;
+                        }
                     }
-                    a = listIterator.next();
-                    if (a != null && a.enumValue != null) {
-                        ticket_time = a.enumValue.name;
+                    if (listIterator.hasNext()) {
+                        a = listIterator.next();
+                        if (a != null && a.enumValue != null) {
+                            ticket_time = a.enumValue.name;
+                        }
                     }
-                    a = listIterator.next();
-                    if (a != null && a.enumValue != null) {
-                        topic = a.enumValue.name;
+                    if (listIterator.hasNext()) {
+                        a = listIterator.next();
+                        if (a != null && a.enumValue != null) {
+                            topic = a.enumValue.name;
+                        }
                     }
-                    a = listIterator.next();
-                    if (a != null && a.enumValue != null) {
-                        input = a.enumValue.name;
+                    if (listIterator.hasNext()) {
+                        a = listIterator.next();
+                        if (a != null && a.enumValue != null) {
+                            input = a.enumValue.name;
+                        }
                     }
                     if (i.createdAt != null) {
                         created_at = Timestamp.from(Instant.ofEpochMilli(i.createdAt.getValue()));
@@ -157,6 +165,7 @@ public class Main {
         String Sync_Token = values.get("Sync_Token", "");
 //            Sync_Token="22f1366eda6c6d3d76be3abf506dfb04:1";
         CollectionRequest events = client.events.get(project_id, Sync_Token);
+
         ResultBodyCollection<Event> sync_data = events.executeRaw();
         values.put("Sync_Token", sync_data.sync);
 
@@ -165,6 +174,7 @@ public class Main {
                 if ("deleted".equals(a.action)) {
                     String sql = "DELETE FROM public.tickets WHERE \"ID\" =?";
                     PreparedStatement ps = conn.prepareStatement(sql);
+//                   System.out.println(a.resource.gid+ " deleted ");
                     ps.setString(1, a.resource.gid);
                     ps.execute();
                 }
