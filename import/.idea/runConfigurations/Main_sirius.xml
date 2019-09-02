@@ -3,11 +3,12 @@
     <option name="ALTERNATIVE_JRE_PATH" value="AdoptOpenJDK (11)" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
     <envs>
-      <env name="db_address" value="172.16.132.193" />
-      <env name="db_port" value=":5432" />
-      <env name="db_user" value="postgres" />
-      <env name="db_pass" value="BodyRail%8" />
-      <env name="TOKEN" value="0/1fe378c15de839054e06c60f8e78563f" />
+      <env name="ASANA_TOKEN" value="0/1fe378c15de839054e06c60f8e78563f" />
+      <env name="MB_DB_PASS" value="BodyRail%8" />
+      <env name="MB_DB_USER" value="postgres" />
+      <env name="MB_DB_PORT" value="5432" />
+      <env name="MB_DB_DBNAME" value="support" />
+      <env name="MB_DB_HOST" value="172.16.138.39" />
     </envs>
     <option name="INCLUDE_PROVIDED_SCOPE" value="true" />
     <option name="MAIN_CLASS_NAME" value="Main" />

@@ -1,6 +1,5 @@
 import com.asana.Client;
 import com.asana.models.CustomField;
-import com.asana.models.Event;
 import com.asana.models.ResultBodyCollection;
 import com.asana.models.Task;
 import com.asana.requests.CollectionRequest;
@@ -12,7 +11,6 @@ import java.time.Instant;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.prefs.Preferences;
 
 public class Main {
 
@@ -20,14 +18,25 @@ public class Main {
         final Logger logger = Logger.getLogger(Main.class.getName());
         //config
         String project_id = "2760706195514"; //can retrieve this from url
-        String db_user = System.getenv("db_user");
-        String db_pass = System.getenv("db_pass");
-        String ip_address = System.getenv("db_address");
-        String port = System.getenv("db_port"); // append with : at start
-        String db = "/support"; // append with / at start
-        String table = "public.tickets"; //Include schema
-        String Auth_key = System.getenv("TOKEN");
+        String db_user = System.getenv("MB_DB_USER");
+        String db_pass = System.getenv("MB_DB_PASS");
+        String ip_address = System.getenv("MB_DB_HOST");
+        String port = ':' + System.getenv("MB_DB_PORT");
+        String db = '/' + System.getenv("MB_DB_DBNAME");
+        String table = "asana.tickets"; //Include schema
+        String Auth_key = System.getenv("ASANA_TOKEN");
 
+        if (args.length == 1) {
+            project_id = args[0].strip();
+            table = "asana.T" + project_id;
+        } else if (args.length == 2) {
+            project_id = args[0].strip();
+            table = "asana." + args[1].strip();
+        } else if (args.length == 3) {
+            project_id = args[0].strip();
+            table = "asana." + args[1].strip();
+            db = args[2].strip();
+        }
 
         // Database connection
         String db_url = "jdbc:postgresql://" + ip_address + port + db;
@@ -40,8 +49,8 @@ public class Main {
         String offset = null;
         final Client client = Client.accessToken(Auth_key);
         client.headers.put("Asana-Enable", "string_ids,new_sections"); // remove after 2020-02-11
-        List<String> fields = new ArrayList<>(Arrays.asList("gid", "created_at", "due_on", "completed_at", "completed", "modified_at", "name", "notes", "assignee", "assignee.name", "assignee.email", "tags", "custom_fields", "custom_fields.enum_value"));
-        List<String> expand = new ArrayList<>(Arrays.asList("gid", "created_at", "due_on", "completed_at", "completed", "modified_at", "name", "notes", "assignee", "assignee.name", "assignee.email", "tags", "custom_fields", "custom_fields.enum_value"));
+        List<String> fields = new ArrayList<>(Arrays.asList("gid", "created_at", "due_on", "completed_at", "completed", "modified_at", "name", "notes", "assignee", "assignee.name", "assignee.email", "tags", "custom_fields", "custom_fields.enum_value", "custom_fields.resource_subtype", "custom_fields.text_value", "custom_fields.number_value", "custom_fields.name"));
+        List<String> expand = new ArrayList<>(Arrays.asList("gid", "created_at", "due_on", "completed_at", "completed", "modified_at", "name", "notes", "assignee", "assignee.name", "assignee.email", "tags", "custom_fields", "custom_fields.enum_value", "custom_fields.resource_subtype", "custom_fields.text_value", "custom_fields.number_value", "custom_fields.name"));
 
         try (Connection conn = DriverManager.getConnection(db_url, props)) {
             logger.log(Level.INFO, "Connected " + logger.getName());
@@ -54,11 +63,9 @@ public class Main {
                 Timestamp maxModified = rs.getTimestamp("max");
                 max = new SimpleDateFormat("yyyy-MM-dd").format(maxModified);
             }
-
-            if (!("true".equals(System.getenv("TRAVIS")))) {
-                runSync(conn, client, project_id);
-            }
+            
             while (true) {
+                SortedMap<String, String> customfields = new TreeMap<>();
                 CollectionRequest search = client.tasks.searchInWorkspace("2740660799089").query("modified_on.after", max).query("projects.any", project_id).option("limit", 100).option("page_size", 100).option("offset", offset).option("fields", fields).option("expand", expand);
                 ResultBodyCollection<Task> result = search.executeRaw();
                 for (Task i : result.data) {
@@ -67,44 +74,18 @@ public class Main {
                     Timestamp completed_at = null;
                     Timestamp modified_at = null;
                     String name = "";
+                    String tags = "";
                     String notes = "";
                     Timestamp due_on = null;
                     String assignee_name = "";
                     String assignee_email = "";
-                    String site = "";
-                    String ticket_time = "";
-                    String topic = "";
-                    String input = "";
                     if (i.assignee != null) {
 //                        assignee_id = i.assignee.id;
                         assignee_name = i.assignee.name;
                         assignee_email = i.assignee.email;
                     }
-                    Iterator<CustomField> listIterator = i.customFields.iterator();
-                    CustomField a;
-                    if (listIterator.hasNext()) {
-                        a = listIterator.next();
-                        if (a != null && a.enumValue != null) {
-                            site = a.enumValue.name;
-                        }
-                    }
-                    if (listIterator.hasNext()) {
-                        a = listIterator.next();
-                        if (a != null && a.enumValue != null) {
-                            ticket_time = a.enumValue.name;
-                        }
-                    }
-                    if (listIterator.hasNext()) {
-                        a = listIterator.next();
-                        if (a != null && a.enumValue != null) {
-                            topic = a.enumValue.name;
-                        }
-                    }
-                    if (listIterator.hasNext()) {
-                        a = listIterator.next();
-                        if (a != null && a.enumValue != null) {
-                            input = a.enumValue.name;
-                        }
+                    for (CustomField a : i.customFields) {
+                        customfields.put(a.name, getCustom(a));
                     }
                     if (i.createdAt != null) {
                         created_at = Timestamp.from(Instant.ofEpochMilli(i.createdAt.getValue()));
@@ -121,13 +102,16 @@ public class Main {
                     if (i.name != null) {
                         name = i.name;
                     }
+                    if (i.tags != null) {
+                        tags = i.tags.toString();
+                    }
                     if (i.notes != null) {
                         notes = i.notes;
                     }
-                    String sql = "INSERT INTO " + table + "(\"ID\", \"Created_Date\", \"Completed_At\", \"Completed\", \"Modified\", \"Name\", \"Assignee\", \"Assignee_Email\", \"Due_On\", \"Notes\", \"Site\", \"Ticket_Time\", \"Topic\", \"Ticket_Input\")" +
-                            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) " +
+                    String sql = "INSERT INTO " + table + "(\"ID\", \"Created_Date\", \"Completed_At\", \"Completed\", \"Modified\", \"Name\", \"Assignee\", \"Assignee_Email\", \"Due_On\",\"Tags\", \"Notes\")" +
+                            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?) " +
                             "ON CONFLICT (\"ID\") DO UPDATE SET " +
-                            "\"Created_Date\" = excluded.\"Created_Date\", \"Completed_At\" = excluded.\"Completed_At\", \"Completed\" = excluded.\"Completed\", \"Modified\"=excluded.\"Modified\", \"Name\"=excluded.\"Name\", \"Assignee\"=excluded.\"Assignee\", \"Assignee_Email\"=excluded.\"Assignee_Email\", \"Due_On\"=excluded.\"Due_On\", \"Notes\"=excluded.\"Notes\", \"Site\"=excluded.\"Site\", \"Ticket_Time\"=excluded.\"Ticket_Time\",\"Topic\"=excluded.\"Topic\",\"Ticket_Input\"=excluded.\"Ticket_Input\"";
+                            "\"Created_Date\" = excluded.\"Created_Date\", \"Completed_At\" = excluded.\"Completed_At\", \"Completed\" = excluded.\"Completed\", \"Modified\"=excluded.\"Modified\", \"Name\"=excluded.\"Name\", \"Assignee\"=excluded.\"Assignee\", \"Assignee_Email\"=excluded.\"Assignee_Email\", \"Due_On\"=excluded.\"Due_On\",\"Tags\"=excluded.\"Tags\", \"Notes\"=excluded.\"Notes\"";
                     PreparedStatement ps = conn.prepareStatement(sql);
                     ps.setString(1, i.gid);
                     ps.setTimestamp(2, created_at);
@@ -138,12 +122,17 @@ public class Main {
                     ps.setString(7, assignee_name);
                     ps.setString(8, assignee_email);
                     ps.setTimestamp(9, due_on);
-                    ps.setString(10, notes);
-                    ps.setString(11, site);
-                    ps.setString(12, ticket_time);
-                    ps.setString(13, topic);
-                    ps.setString(14, input);
+                    ps.setString(10, tags);
+                    ps.setString(11, notes);
                     ps.execute();
+
+                    for (Map.Entry<String, String> entry : customfields.entrySet()) {
+                        String sql2 = "UPDATE " + table + " SET \"" + entry.getKey().replace(' ', '_') + "\"=? WHERE \"ID\"=?";
+                        PreparedStatement ps2 = conn.prepareStatement(sql2);
+                        ps2.setString(1, entry.getValue());
+                        ps2.setString(2, i.gid);
+                        ps2.execute();
+                    }
                     counter++;
                 }
                 if (result.nextPage != null) {
@@ -161,22 +150,16 @@ public class Main {
         }
     }
 
-    public static void runSync(Connection conn, Client client, String project_id) throws IOException, SQLException {
-        Preferences values = Preferences.userRoot().node("asana-sync");  //find deleted tasks
-        String Sync_Token = values.get("Sync_Token", "");
-//            Sync_Token="22f1366eda6c6d3d76be3abf506dfb04:1";
-        CollectionRequest events = client.events.get(project_id, Sync_Token);
 
-        ResultBodyCollection<Event> sync_data = events.executeRaw();
-        values.put("Sync_Token", sync_data.sync);
-
-        for (Event a : sync_data.data) {
-            if (a != null && "deleted".equals(a.action)) {
-                String sql = "DELETE FROM public.tickets WHERE \"ID\" =?";
-                PreparedStatement ps = conn.prepareStatement(sql);
-                ps.setString(1, a.resource.gid);
-                ps.execute();
-            }
-        }
+    private static String getCustom(CustomField a) {
+        if (a == null) {
+            return "";
+        } else if ("enum".equals(a.resourceSubtype) && a.enumValue != null) {
+            return a.enumValue.name;
+        } else if ("text".equals(a.resourceSubtype) && a.textValue != null) {
+            return a.textValue;
+        } else if ("number".equals(a.resourceSubtype) && a.numberValue != null) {
+            return a.numberValue;
+        } else return "";
     }
 }

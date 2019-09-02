@@ -1,14 +1,2 @@
-
-*.gradle
-/import/*.gradle
-/sync/*.gradle
-*.bin
-*.lock
-*.bin
-*.lock
-*.lock
-*.bin
-*.lock
-*.lock
-*.lock
-*.bin
+/import/.gradle/*/*
+/sync/.gradle/*/*
