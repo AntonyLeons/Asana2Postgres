@@ -13,7 +13,7 @@ before_script:
 script:
   - cd import && javac -cp "lib/*" "src/main/java/Main.java"
   - gradle jar
-  - cd sync && javac -cp "lib/*" "src/main/java/Main.java"
+  - cd "$TRAVIS_BUILD_DIR"sync && javac -cp "lib/*" "src/main/java/Main.java"
   - gradle jar
   
 cache:
