@@ -5,7 +5,7 @@ jdk: openjdk11
 script:
   - cd import && javac -cp "lib/*" "src/main/java/Main.java"
   - gradle jar
-  - cd "$TRAVIS_BUILD_DIR"sync && javac -cp "lib/*" "src/main/java/Main.java"
+  - cd "$TRAVIS_BUILD_DIR"/sync && javac -cp "lib/*" "src/main/java/Main.java"
   - gradle jar
   
 cache:
