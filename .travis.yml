@@ -2,14 +2,6 @@ language: java
 
 jdk: openjdk11
 
-services: postgresql
-
-before_script:
-  - psql -c 'create database support;' -U postgres
-  - psql -h localhost -U postgres -d support -a -f "import/create.sql"
-  - psql -c "CREATE USER $db_user WITH PASSWORD '$db_pass'";
-  - psql -d support -c "GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO $db_user"
-
 script:
   - cd import && javac -cp "lib/*" "src/main/java/Main.java"
   - gradle jar
