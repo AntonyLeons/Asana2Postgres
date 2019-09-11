@@ -85,7 +85,7 @@ public class Main {
                         assignee_email = i.assignee.email;
                     }
                     for (CustomField a : i.customFields) {
-                        customfields.put(a.name, getCustom(a));
+                        customfields.put(a.name.replace(' ', '_'), getCustom(a));
                     }
                     if (i.createdAt != null) {
                         created_at = Timestamp.from(Instant.ofEpochMilli(i.createdAt.getValue()));
@@ -127,7 +127,7 @@ public class Main {
                     ps.execute();
 
                     for (Map.Entry<String, String> entry : customfields.entrySet()) {
-                        String sql2 = "UPDATE " + table + " SET \"" + entry.getKey().replace(' ', '_') + "\"=? WHERE \"ID\"=?";
+                        String sql2 = "UPDATE " + table + " SET \"" + entry.getKey() + "\"=? WHERE \"ID\"=?";
                         PreparedStatement ps2 = conn.prepareStatement(sql2);
                         ps2.setString(1, entry.getValue());
                         ps2.setString(2, i.gid);

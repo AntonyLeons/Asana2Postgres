@@ -160,8 +160,7 @@ public class Main {
 
     private static void createTable(Connection conn, Client client, String project_id, String table, List<String> fields, List<String> expand) throws IOException, SQLException {
         String sql = "DROP TABLE IF EXISTS " + table + ";CREATE TABLE " + table +
-                "(" +
-                "    \"ID\" character varying(31) PRIMARY KEY  NOT NULL," +
+                "   (\"ID\" character varying(31) PRIMARY KEY  NOT NULL," +
                 "    \"Created_Date\" timestamp(4) with time zone," +
                 "    \"Completed_At\" timestamp(4) with time zone," +
                 "    \"Completed\" boolean," +
@@ -177,9 +176,7 @@ public class Main {
         CollectionRequest tasks = client.tasks.findByProject(project_id).option("limit", 1).option("page_size", 1).option("fields", fields).option("expand", expand);
         ResultBodyCollection<Task> result = tasks.executeRaw();
         Task i = result.data.get(0);
-        Iterator<CustomField> listIterator = i.customFields.iterator();
-        while (listIterator.hasNext()) {
-            CustomField a = listIterator.next();
+        for (CustomField a : i.customFields) {
             String columnName = a.name.replace(' ', '_');
             customColumn.add(columnName);
             String sql2 = "ALTER TABLE " + table +
